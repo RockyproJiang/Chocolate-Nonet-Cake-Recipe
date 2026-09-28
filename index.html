@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>巧克力九重奏 · Chocolate Nonet Cake</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --d:#3E2723;--c:#5D4037;--m:#8D6E63;--ca:#D7A86E;
+    --cr:#FFF8E1;--wc:#F5E6D3;--w:#FDF6EC;--gold:#C66900;
+  }
+  html,body{height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#2B1B14;color:var(--d);display:flex;flex-direction:column;overflow:hidden}
+  #topbar{background:var(--c);padding:8px 14px 10px;flex-shrink:0;color:var(--cr);border-bottom:3px solid var(--ca)}
+  #strack{display:flex;align-items:center;gap:3px;margin-bottom:6px}
+  .tdot{flex:1;height:5px;border-radius:3px;background:rgba(255,248,225,.2);transition:background .3s}
+  .tdot.done{background:var(--ca)}
+  .tdot.cur{background:#FFD54F;box-shadow:0 0 10px rgba(255,213,79,.8)}
+  #sname{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  #sname .num{font-size:clamp(12px,1.5vw,15px);color:#3E2723;font-weight:800;letter-spacing:.5px;background:var(--ca);padding:4px 12px;border-radius:11px;white-space:nowrap}
+  #sname .en{font-size:clamp(15px,2vw,21px);color:var(--ca);font-weight:700;font-style:italic}
+  #sname .zh{font-size:clamp(15px,1.9vw,20px);font-weight:700;letter-spacing:.5px}
+  #sname .stage{font-size:clamp(11px,1.3vw,13px);background:rgba(255,248,225,.14);color:var(--cr);padding:3px 10px;border-radius:11px;font-weight:700;margin-left:auto;white-space:nowrap}
+  #ingbar{flex-shrink:0;background:var(--wc);border-bottom:3px solid var(--ca);padding:7px 10px;display:flex;align-items:center;gap:10px;transition:max-height .35s ease,padding .35s ease,opacity .25s ease;max-height:80px;overflow:hidden}
+  .ib-label{font-size:13px;font-weight:800;color:var(--m);letter-spacing:1px;white-space:nowrap;flex-shrink:0;padding-left:2px}
+  #ring{display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;flex:1;min-width:0;scrollbar-width:thin}
+  #ring::-webkit-scrollbar{height:5px}
+  #ring::-webkit-scrollbar-thumb{background:#D7CCC8;border-radius:3px}
+  .ing-empty{font-size:13px;color:#BCAAA4;font-style:italic;padding:8px 4px;white-space:nowrap}
+  .chip{flex:0 0 auto;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #E8D5B7;border-radius:11px;padding:4px 10px;transition:all .35s;position:relative}
+  .chip.hl{border-color:#FFB74D;background:#FFF8E1;box-shadow:0 0 0 2px rgba(255,183,77,.25)}
+  .chip.gone{opacity:.32;filter:grayscale(.7)}
+  .chip svg{width:24px;height:24px;flex-shrink:0}
+  .chip .czh{font-size:14px;font-weight:700;color:var(--d);white-space:nowrap}
+  .chip .camt{font-size:15px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;white-space:nowrap}
+  body.title-mode #ingbar{max-height:0;padding-top:0;padding-bottom:0;border-bottom-width:0;opacity:0}
+  body.title-mode #recipe{display:none}
+  body.title-mode #co-area{display:none}
+  #main{flex:1;display:flex;min-height:0;position:relative;background:var(--w)}
+  #recipe{width:clamp(220px,24vw,320px);flex-shrink:0;background:var(--w);border-right:3px solid var(--ca);display:flex;flex-direction:column;overflow-y:auto}
+  .rp-head{font-size:clamp(14px,1.5vw,17px);letter-spacing:1.2px;color:var(--m);font-weight:800;padding:14px 14px 4px}
+  .rp-head span{color:var(--ca)}
+  #rstep{padding:2px 14px 14px;border-bottom:2px dashed #E8D5B7}
+  #rstep .r-en{font-size:clamp(17px,2.05vw,24px);color:var(--d);font-weight:800;line-height:1.45}
+  #rstep .r-zh{font-size:clamp(15px,1.65vw,19px);color:#5D4037;margin-top:8px;line-height:1.65;font-weight:600}
+  #ruse{padding:6px 14px 20px;display:flex;flex-direction:column;gap:5px}
+  .urow{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1.5px solid #E8D5B7;border-radius:9px;padding:6px 10px}
+  .urow .un{font-size:15px;font-weight:700;color:var(--d)}
+  .urow .ua{font-size:15px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+  .use-empty{font-size:14px;color:#BCAAA4;font-style:italic;padding:4px 2px}
+  #stageWrap{flex:1;min-width:0;display:flex;flex-direction:row;background:var(--w);overflow:hidden}
+  #stage{flex:1;min-width:0;position:relative;overflow:hidden;background:linear-gradient(to bottom,#FDF6EC 0%,#FDF6EC 68%,#E8D5B7 68%,#E8D5B7 100%)}
+  #scene{position:absolute;inset:0}
+  #scene svg{width:100%;height:100%;display:block}
+  #co-area{width:clamp(200px,26%,320px);flex-shrink:0;background:#FBF3E6;border-left:2px dashed #E8D5B7;display:flex;flex-direction:column;gap:8px;overflow-y:auto;padding:10px 9px 78px;scrollbar-width:thin}
+  #co-area::-webkit-scrollbar{width:5px}
+  #co-area::-webkit-scrollbar-thumb{background:#D7CCC8;border-radius:3px}
+  .co{padding:12px 15px;background:rgba(255,255,255,.98);border-radius:12px;border-left:4px solid var(--ca);box-shadow:0 4px 14px rgba(62,39,35,.12);opacity:0;transform:translateX(16px);transition:opacity .4s cubic-bezier(.22,1,.36,1),transform .4s cubic-bezier(.22,1,.36,1)}
+  .co.in{opacity:1;transform:translateX(0)}
+  .co .en{font-size:clamp(14px,1.55vw,18px);color:var(--d);font-weight:700;line-height:1.45}
+  .co .zh{font-size:clamp(13px,1.4vw,16px);color:#8D6E63;margin-top:4px;line-height:1.55;font-weight:600}
+  .co .en .vb{color:var(--gold);font-weight:900;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:2px}
+  .co .icon{font-size:18px;margin-right:5px}
+  #nav{position:fixed;right:16px;bottom:14px;display:flex;gap:9px;z-index:960}
+  .nb{font-family:inherit;font-size:clamp(13px,1.3vw,15px);font-weight:700;padding:11px 22px;border-radius:24px;border:none;cursor:pointer;background:var(--c);color:var(--cr);box-shadow:0 6px 18px rgba(62,39,35,.3);transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s,opacity .2s}
+  .nb:hover:not(:disabled){background:var(--d);transform:translateY(-2px)}
+  .nb:disabled{opacity:.3;cursor:not-allowed}
+  .nb.pri{background:var(--ca);color:#3E2723}
+  .nb.pri:hover:not(:disabled){background:#E8BE84}
+  .ap{opacity:0;transform:translateY(12px);transition:opacity .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1)}
+  .ap.in{opacity:1;transform:translateY(0)}
+  .aps{opacity:0;transform:scale(.4);transition:opacity .5s cubic-bezier(.34,1.56,.64,1),transform .5s cubic-bezier(.34,1.56,.64,1)}
+  .aps.in{opacity:1;transform:scale(1)}
+  .steam{animation:steam 2.6s ease-out infinite;transform-origin:center bottom}
+  @keyframes steam{0%{opacity:0;transform:translateY(6px) scale(.8)}35%{opacity:.6}100%{opacity:0;transform:translateY(-50px) scale(1.3)}}
+  .whisk-circle{animation:wcircle .8s linear infinite}
+  @keyframes wcircle{0%{transform:translate(0,-15px)}12.5%{transform:translate(11px,-11px)}25%{transform:translate(15px,0)}37.5%{transform:translate(11px,11px)}50%{transform:translate(0,15px)}62.5%{transform:translate(-11px,11px)}75%{transform:translate(-15px,0)}87.5%{transform:translate(-11px,-11px)}100%{transform:translate(0,-15px)}}
+  .whisk-stir{animation:whiskStir .8s linear infinite}
+  @keyframes whiskStir{
+    0%{transform:translate(0,-12px)}
+    25%{transform:translate(12px,0)}
+    50%{transform:translate(0,12px)}
+    75%{transform:translate(-12px,0)}
+    100%{transform:translate(0,-12px)}
+  }
+  .stir-small{animation:stirsm .7s linear infinite}
+  @keyframes stirsm{0%{transform:translate(0,-7px)}25%{transform:translate(7px,0)}50%{transform:translate(0,7px)}75%{transform:translate(-7px,0)}100%{transform:translate(0,-7px)}}
+  .title-pop{opacity:0;transform:scale(.7);transition:opacity .7s cubic-bezier(.34,1.56,.64,1),transform .7s cubic-bezier(.34,1.56,.64,1)}
+  .title-pop.in{opacity:1;transform:scale(1)}
+  @media (max-width: 1100px){
+    #recipe{width:clamp(190px,22vw,260px)}
+    #co-area{width:clamp(180px,26%,270px)}
+  }
+  @media (max-width: 900px){
+    body{overflow:hidden}
+    #topbar{padding:7px 12px 8px}
+    #sname .stage{display:none}
+    #ingbar{padding:6px 8px;max-height:74px}
+    .ib-label{display:none}
+    #main{flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    #recipe{width:100%;border-right:none;border-bottom:3px solid var(--ca);overflow:visible;flex-shrink:0}
+    #stageWrap{flex-direction:column;flex:none;width:100%;overflow:visible}
+    #stage{flex:none;width:100%;aspect-ratio:16/10;min-height:180px}
+    #co-area{width:100%;border-left:none;border-top:2px dashed #E8D5B7;padding:10px;max-height:none;overflow:visible;flex-direction:row;flex-wrap:wrap;gap:7px}
+    .co{flex:1 1 auto;min-width:160px}
+    #nav{right:10px;bottom:10px}
+    .nb{padding:9px 16px;font-size:13px;border-radius:20px}
+    /* ==================== 照片展示 ==================== */
+    .photo-group{
+      transform-box:fill-box;
+      transform-origin:center;
+      opacity:0;
+      transform:scale(0.4);
+      transition:opacity .7s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.34,1.56,.64,1);
+    }
+    .photo-group.in{
+      opacity:1;
+      transform:scale(1);
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div id="strack"></div>
+  <div id="sname">
+    <span class="num">STEP 1 / 1</span>
+    <span class="en">—</span>
+    <span class="zh">—</span>
+    <span class="stage">—</span>
+  </div>
+</div>
+
+<div id="ingbar">
+  <span class="ib-label">原料 · ING</span>
+  <div id="ring"></div>
+</div>
+
+<div id="main">
+  <aside id="recipe">
+    <div class="rp-head">配方 <span>· RECIPE</span></div>
+    <div id="rstep"></div>
+    <div class="rp-head">本步用料 <span>· USING NOW</span></div>
+    <div id="ruse"></div>
+  </aside>
+  <section id="stageWrap">
+    <div id="stage"><div id="scene"></div></div>
+    <aside id="co-area"></aside>
+  </section>
+</div>
+
+<div id="nav">
+  <button class="nb" id="prevBtn">← 上一步</button>
+  <button class="nb pri" id="nextBtn">下一步 →</button>
+</div>
+
+<script>
+/* ==================== 工具函数 ==================== */
+const sceneEl = document.getElementById('scene');
+const coAreaEl = document.getElementById('co-area');
+const ringEl = document.getElementById('ring');
+let timers = [];
+let introOffset = 0;
+const rawLater = (fn, ms) => timers.push(setTimeout(fn, ms || 0));
+const later = (fn, ms) => timers.push(setTimeout(fn, (ms || 0) + introOffset));
+const clearT = () => { timers.forEach(clearTimeout); timers = []; };
+
+const VERB_SET = new Set(['whisk','beat','whip','fold','sift','melt','stir','add','pour','chill','mix','spread','heat','strain','cool','bake','preheat','invert','unmold','press','combine','cover','soak','drain','decorate','crack','blend','set','smooth','slice','serve','assemble','stack','tap','sprinkle','shake','cook','boil','finish','deflate','return','separate','warm','coat','flip','scrape']);
+
+function highlightEn(text){
+  return text.replace(/[A-Za-z][A-Za-z']*/g, w => {
+    let base = w.toLowerCase().replace(/'s$/, '');
+    let hit = VERB_SET.has(base);
+    if(!hit){
+      const sfx = ['ping','ring','ped','red','ing','ed','en','es','s','d'];
+      for(const sf of sfx){ if(base.length > sf.length + 2 && base.endsWith(sf)){ const b = base.slice(0, -sf.length); if(VERB_SET.has(b) || (b.length > 1 && VERB_SET.has(b.slice(0, -1)))){ hit = true; break; } } }
+    }
+    return hit ? `<b class="vb">${w}</b>` : w;
+  });
+}
+
+function showCO(en, zh, delay, icon){
+  later(() => {
+    const el = document.createElement('div');
+    el.className = 'co';
+    el.innerHTML = `<div class="en">${icon?'<span class="icon">'+icon+'</span>':''}${highlightEn(en)}</div><div class="zh">${zh}</div>`;
+    coAreaEl.appendChild(el);
+    void el.offsetWidth;
+    el.classList.add('in');
+    coAreaEl.scrollTop = coAreaEl.scrollHeight;
+  }, delay || 0);
+}
+function reveal(sel, cls, delay){ later(()=>sceneEl.querySelectorAll(sel).forEach(el=>el.classList.add(cls||'in')), delay||0); }
+function show(sel, delay, dur){ later(()=>sceneEl.querySelectorAll(sel).forEach(el=>{ el.style.transition=`opacity ${dur||.5}s ease`; el.style.opacity='1'; }), delay||0); }
+function setStyle(sel, styles, delay){ later(()=>sceneEl.querySelectorAll(sel).forEach(el=>{ for(const k in styles) el.style[k]=styles[k]; }), delay||0); }
+
+/* ==================== 原料图标 ==================== */
+const ICONS = {
+  dark_choc:`<rect x="4" y="5" width="16" height="14" rx="2" fill="#4E342E"/><line x1="12" y1="5" x2="12" y2="19" stroke="#2B1B14" stroke-width="1"/><line x1="4" y1="12" x2="20" y2="12" stroke="#2B1B14" stroke-width="1"/>`,
+  white_choc:`<rect x="4" y="5" width="16" height="14" rx="2" fill="#F5E6D3"/><line x1="12" y1="5" x2="12" y2="19" stroke="#C9A876" stroke-width="1"/><line x1="4" y1="12" x2="20" y2="12" stroke="#C9A876" stroke-width="1"/>`,
+  butter:`<rect x="4" y="7" width="16" height="12" rx="2" fill="#FFE082" stroke="#E0B784" stroke-width="1"/>`,
+  sugar:`<path d="M5 18 L12 5 L19 18 Z" fill="#EFEBE9" stroke="#D7CCC8" stroke-width="1"/><circle cx="10" cy="14" r="1" fill="#BCAAA4"/><circle cx="14" cy="15" r="1" fill="#BCAAA4"/>`,
+  egg:`<ellipse cx="12" cy="13" rx="6.5" ry="8.5" fill="#FFE0B2" stroke="#E0B784" stroke-width="1"/>`,
+  flour:`<path d="M5 20 L5 8 Q5 6 7 6 L17 6 Q19 6 19 8 L19 20 Z" fill="#FFF3E0" stroke="#D7CCC8" stroke-width="1"/><rect x="4" y="4" width="16" height="3" rx="1.5" fill="#D7CCC8"/>`,
+  cocoa:`<rect x="5" y="5" width="14" height="15" rx="2" fill="#5D4037"/><rect x="7" y="3" width="10" height="3" rx="1" fill="#8D6E63"/>`,
+  salt:`<path d="M7 20 L7 10 Q7 8 9 8 L15 8 Q17 8 17 10 L17 20 Z" fill="#FAFAFA" stroke="#CFD8DC" stroke-width="1"/><circle cx="10" cy="13" r=".8" fill="#90A4AE"/><circle cx="14" cy="15" r=".8" fill="#90A4AE"/>`,
+  milk:`<path d="M6 20 L6 9 L8 6 L16 6 L18 9 L18 20 Z" fill="#FAFAFA" stroke="#CFD8DC" stroke-width="1"/><rect x="10" y="4" width="4" height="2" fill="#CFD8DC"/>`,
+  oil:`<rect x="6" y="6" width="12" height="14" rx="2" fill="#FFF59D" stroke="#E6C34A" stroke-width="1"/><rect x="9" y="3" width="6" height="3" rx="1" fill="#E6C34A"/>`,
+  lemon:`<circle cx="12" cy="13" r="7" fill="#FFF59D" stroke="#E6C34A" stroke-width="1"/><line x1="12" y1="6" x2="12" y2="20" stroke="#E6C34A" stroke-width=".7"/><line x1="5" y1="13" x2="19" y2="13" stroke="#E6C34A" stroke-width=".7"/>`,
+  cream:`<path d="M6 20 L6 9 L9 5 L15 5 L18 9 L18 20 Z" fill="#FFFDE7" stroke="#E0E0E0" stroke-width="1"/><path d="M6 11 Q12 13 18 11" fill="none" stroke="#E0E0E0" stroke-width=".8"/>`,
+  gelatin:`<rect x="4" y="10" width="16" height="8" rx="2" fill="#E1F5FE" stroke="#B3E5FC" stroke-width="1"/>`,
+  psugar:`<path d="M5 18 L12 5 L19 18 Z" fill="#FAFAFA" stroke="#CFD8DC" stroke-width="1"/>`,
+  cocoab:`<circle cx="12" cy="13" r="7" fill="#FFF3E0" stroke="#D7A86E" stroke-width="1"/>`,
+  crunch:`<rect x="4" y="8" width="7" height="6" rx="1" fill="#D7A86E"/><rect x="13" y="11" width="7" height="6" rx="1" fill="#D7A86E"/><rect x="8" y="15" width="6" height="5" rx="1" fill="#C9A876"/>`,
+  boba:`<circle cx="8" cy="12" r="4" fill="#3E2723"/><circle cx="16" cy="15" r="3.5" fill="#3E2723"/><circle cx="14" cy="8" r="3" fill="#3E2723"/>`,
+  mold:`<rect x="4" y="7" width="16" height="12" rx="2" fill="#CFD8DC" stroke="#90A4AE" stroke-width="1"/><rect x="6" y="9" width="12" height="8" rx="1" fill="#ECEFF1"/>`,
+  whisk:`<rect x="11" y="2" width="2.2" height="9" rx="1" fill="#90A4AE"/><ellipse cx="12" cy="15" rx="4.5" ry="6.5" fill="none" stroke="#B0BEC5" stroke-width="1.6"/><ellipse cx="12" cy="15" rx="1.8" ry="6.5" fill="none" stroke="#B0BEC5" stroke-width="1.1"/><ellipse cx="12" cy="15" rx="6.8" ry="6.5" fill="none" stroke="#CFD8DC" stroke-width="1"/>`,
+  pan:`<path d="M3 9 L3 17 L17 17 L17 9 Q10 6 3 9 Z" fill="#90A4AE"/><path d="M5 11 L15 11 L15 15 L5 15 Z" fill="#ECEFF1"/><rect x="17" y="11" width="6" height="2.4" rx="1.2" fill="#78909C"/>`
+};
+
+/* ==================== 原料数据 ==================== */
+const ING = {
+  dark_choc:{zh:'黑巧克力',en:'Dark chocolate',unit:'g',total:185,icon:'dark_choc'},
+  white_choc:{zh:'白巧克力',en:'White chocolate',unit:'g',total:100,icon:'white_choc'},
+  butter:{zh:'无盐黄油',en:'Unsalted butter',unit:'g',total:40,icon:'butter'},
+  sugar:{zh:'细砂糖',en:'Caster sugar',unit:'g',total:130,icon:'sugar'},
+  egg:{zh:'鸡蛋',en:'Eggs',unit:'个',total:4,icon:'egg'},
+  flour:{zh:'低筋面粉',en:'Cake flour',unit:'g',total:75,icon:'flour'},
+  cocoa:{zh:'可可粉',en:'Cocoa powder',unit:'g',total:20,icon:'cocoa'},
+  salt:{zh:'盐',en:'Salt',unit:'g',total:0.5,icon:'salt'},
+  milk:{zh:'牛奶',en:'Milk',unit:'g',total:295,icon:'milk'},
+  oil:{zh:'玉米油',en:'Corn oil',unit:'g',total:30,icon:'oil'},
+  lemon:{zh:'柠檬汁',en:'Lemon juice',unit:'滴',total:5,icon:'lemon'},
+  cream:{zh:'淡奶油',en:'Heavy cream',unit:'g',total:560,icon:'cream'},
+  gelatin:{zh:'吉利丁片',en:'Gelatin sheets',unit:'g',total:13,icon:'gelatin'},
+  psugar:{zh:'糖粉',en:'Powdered sugar',unit:'g',total:15,icon:'psugar'},
+  cocoab:{zh:'可可脂',en:'Cocoa butter',unit:'g',total:5,icon:'cocoab'},
+  crunch:{zh:'黄油薄脆',en:'Butter crunch',unit:'g',total:40,icon:'crunch'},
+  boba:{zh:'巧克力爆珠',en:'Popping boba',unit:'g',total:20,icon:'boba'},
+  mold:{zh:'6寸加高圆模',en:'6-inch mold',unit:'',total:1,icon:'mold'},
+  whisk_t:{zh:'打蛋器',en:'Whisk',unit:'',total:1,icon:'whisk'},
+  pan_t:{zh:'奶锅',en:'Saucepan',unit:'',total:1,icon:'pan'}
+};
+
+const state = {};
+for (const k in ING) state[k] = ING[k].total;
+let ingReady = false;
+
+function fmtNum(v){ if (v <= 0) return '0'; return v % 1 === 0 ? String(v) : v.toFixed(1); }
+
+function renderRecipe(highlight){
+  if(!ingReady){ ringEl.innerHTML = `<div class="ing-empty">原料稍后在这里显示…</div>`; return; }
+  const sl = ringEl.scrollLeft;
+  let html = '';
+  Object.keys(ING).forEach(k=>{
+    const d = ING[k];
+    const left = state[k];
+    const gone = (left <= 0 && d.unit) ? ' gone' : '';
+    const hl = (highlight && highlight.includes(k)) ? ' hl' : '';
+    const amtText = d.unit ? `${fmtNum(left)}${d.unit}` : (left > 0 ? '✓' : '✓');
+    html += `<div class="chip${gone}${hl}" data-k="${k}"><svg viewBox="0 0 24 24">${ICONS[d.icon]}</svg><span class="czh">${d.zh}</span><span class="camt">${amtText}</span></div>`;
+  });
+  ringEl.innerHTML = html;
+  ringEl.scrollLeft = sl;
+}
+
+function useIng(map){ if(!map) return; for(const k in map) state[k] = Math.max(0, state[k] - map[k]); }
+
+function renderUseList(uses){
+  const el = document.getElementById('ruse');
+  const keys = Object.keys(uses || {});
+  if(!keys.length){ el.innerHTML = '<div class="use-empty">— 本步无原料消耗 —</div>'; return; }
+  el.innerHTML = keys.map(k=>{ const d = ING[k]; const amt = uses[k] > 0 ? `${fmtNum(uses[k])}${d.unit}` : '工具'; return `<div class="urow"><span class="un">${d.zh}</span><span class="ua">${amt}</span></div>`; }).join('');
+}
+
+/* ==================== 中文→英文标签映射 ==================== */
+const ZH_EN = {
+  '黄油': 'Butter',
+  '黑巧克力': 'Dark chocolate',
+  '细砂糖': 'Caster sugar',
+  '鸡蛋': 'Egg',
+  '低筋面粉': 'Cake flour',
+  '可可粉': 'Cocoa powder',
+  '盐': 'Salt',
+  '打蛋器': 'Whisk',
+  '6寸加高圆模': '6" mold',
+  '牛奶': 'Milk',
+  '玉米油': 'Corn oil',
+  '柠檬汁': 'Lemon juice',
+  '淡奶油': 'Cream',
+  '白巧克力': 'White chocolate',
+  '吉利丁': 'Gelatin',
+  '糖粉': 'Powdered sugar',
+  '奶油': 'Cream',
+  '砂糖': 'Sugar',
+  '蛋黄': 'Yolk',
+  '可可脂': 'Cocoa butter',
+  '黄油薄脆': 'Crunch',
+  '爆珠': 'Boba'
+};
+
+/* ==================== 场景元素飞入 ==================== */
+function svgScaleOf(svg){
+  const rect = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const w = vb && vb.width ? vb.width : 900;
+  const h = vb && vb.height ? vb.height : 500;
+  return Math.min(rect.width / w, rect.height / h) || 1;
+}
+
+function runFlyIns(){
+  const svg = sceneEl.querySelector('svg');
+  if(!svg) return;
+  const scale = svgScaleOf(svg);
+  const stage = document.getElementById('stage');
+  if(stage.getBoundingClientRect().width < 10) return;
+
+  const items = Array.from(sceneEl.querySelectorAll('[data-fly]'));
+  items.forEach((el, idx) => {
+    const key = el.getAttribute('data-fly');
+    const chip = ringEl.querySelector(`.chip[data-k="${key}"]`);
+    if(!chip) return;
+    el.style.transform = '';
+    void el.getBoundingClientRect();
+    const finalR = el.getBoundingClientRect();
+    const chipR = chip.getBoundingClientRect();
+    if(finalR.width === 0 || chipR.width === 0) return;
+    const dxS = (chipR.left + chipR.width/2) - (finalR.left + finalR.width/2);
+    const dyS = (chipR.top + chipR.height/2) - (finalR.top + finalR.height/2);
+    const dx = dxS / scale;
+    const dy = dyS / scale;
+    el.style.transition = 'none';
+    el.style.transform = `translate(${dx}px, ${dy}px) scale(0.42)`;
+    void el.getBoundingClientRect();
+    rawLater(() => {
+      el.style.transition = 'transform .65s cubic-bezier(.5,-0.05,.4,1), opacity .3s ease';
+      el.style.transform = 'translate(0px, 0px) scale(1)';
+      el.style.opacity = '1';
+    }, 30 + idx * 130);
+    chip.style.transition = 'transform .28s ease';
+    chip.style.transform = 'translateY(-5px)';
+    setTimeout(() => { chip.style.transform = ''; }, 300);
+  });
+}
+
+/* ==================== 场景片段 ==================== */
+const DEFS = `
+<defs>
+  <linearGradient id="bowlG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#CFD8DC"/><stop offset="100%" stop-color="#8FA3AB"/></linearGradient>
+  <linearGradient id="ovenGlow" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFB74D"/><stop offset="100%" stop-color="#E65100"/></linearGradient>
+  <linearGradient id="wallG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FDF6EC"/><stop offset="100%" stop-color="#F5E6D3"/></linearGradient>
+  <linearGradient id="crumbG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6D4C41"/><stop offset="100%" stop-color="#3E2723"/></linearGradient>
+</defs>`;
+
+function bgCounter(){
+  return `<rect x="0" y="0" width="900" height="340" fill="#FDF6EC"/><rect x="0" y="340" width="900" height="260" fill="#E8D5B7"/><rect x="0" y="340" width="900" height="8" fill="#D7A86E"/><rect x="0" y="340" width="900" height="1" fill="#C9A876"/>`;
+}
+
+function bowl(cx, cy, rx, fill, fillOp){
+  const ry = rx * 0.23;
+  return `<path d="M${cx-rx} ${cy} A ${rx} ${rx} 0 0 0 ${cx+rx} ${cy} Z" fill="#B0BEC5"/><path d="M${cx-rx} ${cy} A ${rx} ${rx} 0 0 0 ${cx+rx} ${cy} Z" fill="url(#bowlG)"/><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#CFD8DC"/><ellipse class="bowl-fill" cx="${cx}" cy="${cy}" rx="${rx-7}" ry="${ry-3}" fill="${fill||'#E0E0E0'}" opacity="${fillOp==null?1:fillOp}"/><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="#90A4AE" stroke-width="2"/>`;
+}
+
+function glassBowl(cx, cy, rx, fill, fillOp){
+  const ry = rx * 0.23;
+  return `<path d="M${cx-rx} ${cy} A ${rx} ${rx} 0 0 0 ${cx+rx} ${cy} Z" fill="rgba(207,216,220,.45)" stroke="#90A4AE" stroke-width="2.5"/><ellipse class="bowl-fill" cx="${cx}" cy="${cy}" rx="${rx-7}" ry="${ry-3}" fill="${fill||'#E0E0E0'}" opacity="${fillOp==null?1:fillOp}"/><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="#90A4AE" stroke-width="2.5"/>`;
+}
+
+function saucepan(cx, cy, w, contentColor){
+  const h = w * 0.72;
+  return `<g><rect x="${cx+w/2-4}" y="${cy-h}" width="9" height="34" rx="4" fill="#78909C" transform="rotate(28 ${cx+w/2} ${cy-h})"/><path d="M${cx-w/2} ${cy-h} L${cx-w/2+6} ${cy} L${cx+w/2-6} ${cy} L${cx+w/2} ${cy-h} Z" fill="#90A4AE"/><path class="pan-fill" d="M${cx-w/2+6} ${cy-h+8} L${cx-w/2+10} ${cy-4} L${cx+w/2-10} ${cy-4} L${cx+w/2-6} ${cy-h+8} Z" fill="${contentColor||'#5D4037'}"/><ellipse cx="${cx}" cy="${cy-h}" rx="${w/2}" ry="${w*0.13}" fill="#B0BEC5"/><ellipse class="pan-top" cx="${cx}" cy="${cy-h}" rx="${w/2-6}" ry="${w*0.1}" fill="${contentColor||'#5D4037'}"/></g>`;
+}
+
+function whiskG(cx, cy, len, angle){
+  const wc = cy - len * 0.3;
+  return `<g class="wg" transform="rotate(${angle||0} ${cx} ${cy})"><rect x="${cx-5}" y="${cy-len}" width="10" height="${len*0.58}" rx="5" fill="#90A4AE"/><ellipse cx="${cx}" cy="${wc}" rx="15" ry="${len*0.44}" fill="none" stroke="#B0BEC5" stroke-width="3.5"/><ellipse cx="${cx}" cy="${wc}" rx="6" ry="${len*0.44}" fill="none" stroke="#B0BEC5" stroke-width="2.5"/><ellipse cx="${cx}" cy="${wc}" rx="23" ry="${len*0.44}" fill="none" stroke="#CFD8DC" stroke-width="2"/></g>`;
+}
+
+function dropShape(cx, tipY, w, h){
+  const cyTop = (tipY - h) + w;
+  const shoulderY = cyTop;
+  const dropH = tipY - shoulderY;
+  return `M ${cx-w},${shoulderY} A ${w},${w} 0 0 0 ${cx+w},${shoulderY} C ${cx+w},${shoulderY + dropH*0.5} ${cx+w*0.5},${shoulderY + dropH*0.82} ${cx},${tipY} C ${cx-w*0.5},${shoulderY + dropH*0.82} ${cx-w},${shoulderY + dropH*0.5} ${cx-w},${shoulderY} Z`;
+}
+
+function sieve(cx, cy, rx){
+  let mesh = '';
+  for(let x = -rx+8; x <= rx-8; x += 12) mesh += `<line x1="${cx+x}" y1="${cy-4}" x2="${cx+x}" y2="${cy+14}" stroke="#90A4AE" stroke-width="1" opacity=".7"/>`;
+  for(let y = 0; y <= 14; y += 5) mesh += `<line x1="${cx-rx+6}" y1="${cy+y}" x2="${cx+rx-6}" y2="${cy+y}" stroke="#90A4AE" stroke-width="1" opacity=".7"/>`;
+  return `<g><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="18" fill="#ECEFF1" stroke="#90A4AE" stroke-width="3"/><path d="M${cx-rx} ${cy} Q${cx-rx} ${cy+28} ${cx} ${cy+28} Q${cx+rx} ${cy+28} ${cx+rx} ${cy}" fill="none" stroke="#90A4AE" stroke-width="3"/><g opacity=".8">${mesh}</g><rect x="${cx-5}" y="${cy-60}" width="10" height="60" rx="5" fill="#90A4AE"/></g>`;
+}
+
+function chocoBar(x,y,w,h,c){
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${c||'#4E342E'}"/><line x1="${x+w/3}" y1="${y+2}" x2="${x+w/3}" y2="${y+h-2}" stroke="#2B1B14" stroke-width="1.2" opacity=".5"/><line x1="${x+w*2/3}" y1="${y+2}" x2="${x+w*2/3}" y2="${y+h-2}" stroke="#2B1B14" stroke-width="1.2" opacity=".5"/><line x1="${x+2}" y1="${y+h/2}" x2="${x+w-2}" y2="${y+h/2}" stroke="#2B1B14" stroke-width="1.2" opacity=".5"/>`;
+}
+
+/* 智能放置标签：靠近顶部的原料标签放在其上方，其他放左右两侧；同时显示中英文 */
+function addSceneTag(cx, cy, zh, side){
+  const svg = sceneEl.querySelector('svg');
+  if(!svg) return;
+  const en = ZH_EN[zh] || '';
+
+  let tx, ty, useVertical = false;
+
+  // 顶部区域的原料：标签放在其上方
+  if(cy < 130){
+    tx = cx;
+    ty = cy - 58;
+    useVertical = true;
+  } else {
+    ty = cy;
+    if(side === 'l'){
+      tx = cx - 88;
+      if(tx < 80) tx = cx + 88;      // 太靠左就翻到右边
+    } else {
+      tx = cx + 88;
+      if(tx > 820) tx = cx - 88;     // 太靠右就翻到左边
+    }
+  }
+
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.setAttribute('opacity', '0');
+  g.style.transition = 'opacity .3s';
+
+  let dashLine = '';
+  if(useVertical){
+    dashLine = `<line x1="${cx}" y1="${ty + 15}" x2="${cx}" y2="${cy - 18}" stroke="#F9A825" stroke-width="2.5" stroke-dasharray="5 3"/>`;
+  } else {
+    const tx2 = (tx > cx) ? cx + 32 : cx - 32;
+    dashLine = `<line x1="${tx2}" y1="${cy}" x2="${cx}" y2="${cy}" stroke="#F9A825" stroke-width="2.5" stroke-dasharray="5 3"/>`;
+  }
+
+  g.innerHTML = `
+    ${dashLine}
+    <text x="${tx}" y="${ty - 2}" text-anchor="middle" font-size="14" font-weight="800" fill="#3E2723">${zh}</text>
+    <text x="${tx}" y="${ty + 14}" text-anchor="middle" font-size="11" font-weight="600" fill="#8D6E63" font-style="italic">${en}</text>
+  `;
+  svg.appendChild(g);
+  requestAnimationFrame(()=>g.setAttribute('opacity','1'));
+}
+
+function titleCard(stageNum, stageName, stageNameEn, subtitle, subtitleEn){
+  sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}<rect x="0" y="0" width="900" height="500" fill="url(#wallG)"/><circle cx="450" cy="230" r="150" fill="#E8D5B7" opacity=".4"/><circle cx="450" cy="230" r="110" fill="#D7A86E" opacity=".28"/><g class="title-pop" id="tc1"><text x="450" y="140" text-anchor="middle" font-size="18" letter-spacing="8" fill="#8D6E63" font-weight="700">STAGE ${stageNum}</text></g><g class="title-pop" id="tc2"><text x="450" y="240" text-anchor="middle" font-size="60" font-weight="800" fill="#3E2723" letter-spacing="4">${stageName}</text></g><g class="title-pop" id="tc3"><text x="450" y="282" text-anchor="middle" font-size="24" fill="#8D6E63" font-style="italic" letter-spacing="1">${stageNameEn}</text></g><g class="title-pop" id="tc4"><line x1="380" y1="310" x2="520" y2="310" stroke="#D7A86E" stroke-width="3" stroke-linecap="round"/></g><g class="title-pop" id="tc5"><text x="450" y="348" text-anchor="middle" font-size="18" fill="#5D4037">${subtitle}</text></g><g class="title-pop" id="tc6"><text x="450" y="375" text-anchor="middle" font-size="15" fill="#8D6E63" font-style="italic">${subtitleEn}</text></g><g class="title-pop" id="tc7"><text x="450" y="452" text-anchor="middle" font-size="14" fill="#BCAAA4">✦ 点击「下一步」继续 ✦</text></g></svg>`;
+  later(()=>document.getElementById('tc1').classList.add('in'),100);
+  later(()=>document.getElementById('tc2').classList.add('in'),280);
+  later(()=>document.getElementById('tc3').classList.add('in'),460);
+  later(()=>document.getElementById('tc4').classList.add('in'),620);
+  later(()=>document.getElementById('tc5').classList.add('in'),780);
+  later(()=>document.getElementById('tc6').classList.add('in'),920);
+  later(()=>document.getElementById('tc7').classList.add('in'),1100);
+}
+
+/* ==================== 步骤定义 ==================== */
+const STEPS = [];
+
+/* 1. 开场 */
+STEPS.push({
+  isTitle:true, stage:'开场', stageEn:'Opening', name:'巧克力九重奏蛋糕', nameEn:'Chocolate Nonet Cake',
+  recipe:'我们将从 0 到 1 完成这个蛋糕。', recipeEn:'We will bake this cake from 0 to 1.',
+  uses:{},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}<rect x="0" y="0" width="900" height="500" fill="url(#wallG)"/><circle cx="450" cy="215" r="170" fill="#E8D5B7" opacity=".4"/><circle cx="450" cy="215" r="120" fill="#D7A86E" opacity=".3"/><circle cx="450" cy="215" r="70" fill="#E8BE84" opacity=".35"/><g class="title-pop" id="o1"><text x="450" y="120" text-anchor="middle" font-size="16" letter-spacing="6" fill="#8D6E63" font-weight="700">A BAKING JOURNEY</text></g><g class="title-pop" id="o2"><text x="450" y="200" text-anchor="middle" font-size="60" font-weight="800" fill="#3E2723" letter-spacing="4">巧克力九重奏</text></g><g class="title-pop" id="o3"><text x="450" y="244" text-anchor="middle" font-size="25" fill="#8D6E63" font-style="italic">Chocolate Nonet Cake</text></g><g class="title-pop" id="o4"><line x1="370" y1="276" x2="530" y2="276" stroke="#D7A86E" stroke-width="3" stroke-linecap="round"/></g><g class="title-pop" id="o5"><text x="450" y="312" text-anchor="middle" font-size="17" fill="#5D4037">6 寸 · 约 8–10 人份 · 十四层结构</text></g><g class="title-pop" id="o6"><text x="450" y="338" text-anchor="middle" font-size="15" fill="#8D6E63" font-style="italic">6-inch · serves 8–10 · 14 layers</text></g><g class="title-pop" id="o7"><text x="450" y="400" text-anchor="middle" font-size="17" font-weight="800" fill="#5D4037">组员 · MEMBERS</text></g><g class="title-pop" id="o8"><text x="450" y="428" text-anchor="middle" font-size="17" font-weight="700" fill="#8D6E63">江乐瑜 · 唐淼楷 · 肖萌 · 余渊涵</text></g><g class="title-pop" id="o9"><text x="450" y="470" text-anchor="middle" font-size="13" fill="#BCAAA4">点击「下一步」开始 ✦</text></g></svg>`;
+    later(()=>document.getElementById('o1').classList.add('in'),100);
+    later(()=>document.getElementById('o2').classList.add('in'),300);
+    later(()=>document.getElementById('o3').classList.add('in'),500);
+    later(()=>document.getElementById('o4').classList.add('in'),680);
+    later(()=>document.getElementById('o5').classList.add('in'),840);
+    later(()=>document.getElementById('o6').classList.add('in'),960);
+    later(()=>document.getElementById('o7').classList.add('in'),1100);
+    later(()=>document.getElementById('o8').classList.add('in'),1250);
+    later(()=>document.getElementById('o9').classList.add('in'),1450);
+  }
+});
+
+/* 2. 认识原料与工具 */
+STEPS.push({
+  stage:'准备', stageEn:'Preparation', name:'认识原料与工具', nameEn:'Meet Ingredients & Tools',
+  recipe:'上方原料栏列出了全部原料；每一步用到的原料会从栏中飞入舞台，并在旁边显示虚线注释。',
+  recipeEn:'The top bar lists all ingredients; each used item flies into the stage with a dashed callout.',
+  uses:{},
+  build(){
+    const ingredients = [
+      {ic:'dark_choc',zh:'黑巧克力'},{ic:'white_choc',zh:'白巧克力'},{ic:'butter',zh:'黄油'},
+      {ic:'sugar',zh:'细砂糖'},{ic:'egg',zh:'鸡蛋'},{ic:'flour',zh:'低筋面粉'},
+      {ic:'cocoa',zh:'可可粉'},{ic:'salt',zh:'盐'},{ic:'milk',zh:'牛奶'},
+      {ic:'oil',zh:'玉米油'},{ic:'lemon',zh:'柠檬汁'},{ic:'cream',zh:'淡奶油'},
+      {ic:'gelatin',zh:'吉利丁片'},{ic:'psugar',zh:'糖粉'},{ic:'cocoab',zh:'可可脂'},
+      {ic:'crunch',zh:'黄油薄脆'},{ic:'boba',zh:'巧克力爆珠'}
+    ];
+    const tools = [{ic:'mold',zh:'6寸加高模'},{ic:'whisk',zh:'打蛋器'},{ic:'pan',zh:'奶锅'}];
+    const box = 76, gap = 12, iconScale = 2.1;
+    const pad = (box - 24*iconScale)/2;
+    let svg = `${DEFS}<rect x="0" y="0" width="900" height="500" fill="#FDF6EC"/>`;
+    svg += `<text x="450" y="28" text-anchor="middle" font-size="15" letter-spacing="5" fill="#8D6E63" font-weight="700">原料 · INGREDIENTS</text>`;
+    const rowAY = [40, 156];
+    const rowAStart = [60, 104];
+    ingredients.forEach((it, i)=>{
+      const row = i < 9 ? 0 : 1;
+      const col = i < 9 ? i : i - 9;
+      const x = rowAStart[row] + col*(box+gap);
+      const y = rowAY[row];
+      svg += `<g class="aps" data-i="ing-${i}" style="transform-origin:${x+box/2}px ${y+box/2}px"><rect x="${x}" y="${y}" width="${box}" height="${box}" rx="16" fill="#FFFFFF" stroke="#E8D5B7" stroke-width="1.8"/><g transform="translate(${x+pad},${y+pad}) scale(${iconScale})">${ICONS[it.ic]}</g><text x="${x+box/2}" y="${y+box+17}" text-anchor="middle" font-size="12" font-weight="800" fill="#3E2723">${it.zh}</text></g>`;
+    });
+    svg += `<text x="450" y="290" text-anchor="middle" font-size="15" letter-spacing="5" fill="#8D6E63" font-weight="700">工具 · TOOLS</text>`;
+    const toolRowW = tools.length*box + (tools.length-1)*gap;
+    const toolStartX = (900 - toolRowW)/2;
+    tools.forEach((it, i)=>{
+      const x = toolStartX + i*(box+gap);
+      const y = 306;
+      svg += `<g class="aps" data-i="tool-${i}" style="transform-origin:${x+box/2}px ${y+box/2}px"><rect x="${x}" y="${y}" width="${box}" height="${box}" rx="16" fill="#FFFFFF" stroke="#D7A86E" stroke-width="1.8"/><g transform="translate(${x+pad},${y+pad}) scale(${iconScale})">${ICONS[it.ic]}</g><text x="${x+box/2}" y="${y+box+17}" text-anchor="middle" font-size="12" font-weight="800" fill="#3E2723">${it.zh}</text></g>`;
+    });
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${svg}</svg>`;
+    ingredients.forEach((_,i)=>later(()=>{ const g = sceneEl.querySelector(`[data-i="ing-${i}"]`); if(g) g.classList.add('in'); }, 120 + i*45));
+    later(()=>{ tools.forEach((_,i)=>{ const g = sceneEl.querySelector(`[data-i="tool-${i}"]`); if(g) g.classList.add('in'); }); }, 120 + ingredients.length*45 + 200);
+    showCO('These are all the ingredients and tools.','这些是全部原料和工具。',100,'🧁');
+    showCO('Ingredients are listed above; tools are separated below.','原料在上方，工具单独在下方。',900,'📋');
+  }
+});
+
+/* 3. 布朗尼标题 */
+STEPS.push({
+  isTitle:true, stage:'布朗尼', stageEn:'Brownie', name:'制作布朗尼面糊', nameEn:'Make the Brownie Batter',
+  recipe:'先做蛋糕最底层。', recipeEn:'Start with the bottom layer.',
+  uses:{}, build(){ titleCard(1,'布朗尼底层','Brownie Base','先来做蛋糕最底下的一层','Start with the bottom layer'); }
+});
+
+/* 4. 融化黑巧克力与黄油 */
+STEPS.push({
+  stage:'布朗尼', stageEn:'Brownie', name:'融化黑巧克力与黄油', nameEn:'Melt Chocolate & Butter',
+  recipe:'把黑巧克力和黄油放进透明碗里，融化并搅匀。',
+  recipeEn:'Melt dark chocolate and butter in a glass bowl, then stir.',
+  uses:{dark_choc:50, butter:40, pan_t:0},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}<g id="gbowl">${glassBowl(450, 340, 150, '#E0B784', 0.25)}</g><g id="butB" data-fly="butter" style="transform-box:fill-box;transform-origin:center"><rect x="120" y="170" width="72" height="54" rx="6" fill="#FFE082" stroke="#E0B784" stroke-width="2"/></g><g id="chocB" data-fly="dark_choc" style="transform-box:fill-box;transform-origin:center">${chocoBar(700,160,64,64,'#3E2723')}</g><g id="steamG" opacity="0"><ellipse class="steam" cx="420" cy="230" rx="10" ry="18" fill="#FFF8E1" opacity=".55"/><ellipse class="steam" cx="460" cy="230" rx="10" ry="18" fill="#FFF8E1" opacity=".55" style="animation-delay:.8s"/><ellipse class="steam" cx="500" cy="230" rx="10" ry="18" fill="#FFF8E1" opacity=".55" style="animation-delay:1.6s"/></g><g id="stirSpoon" opacity="0"><g class="whisk-circle" style="transform-origin:450px 330px"><g transform="translate(450 330)"><rect x="-5" y="-118" width="10" height="86" rx="5" fill="#8D6E63"/><ellipse cx="0" cy="-40" rx="20" ry="14" fill="#CFD8DC"/></g></g></g></svg>`;
+    reveal('#gbowl','in',100);
+    later(()=>{ addSceneTag(156, 197, '黄油', 'l'); addSceneTag(732, 192, '黑巧克力', 'r'); }, 1150);
+    showCO('Melt chocolate and butter together.','黑巧克力和黄油一起融化。',1400,'🍫');
+    setStyle('#butB',{transform:'translate(294px, 133px) rotate(30deg)',transition:'transform .95s cubic-bezier(.22,1,.36,1)'},1900);
+    setStyle('#butB',{opacity:'0',transition:'opacity .45s ease .55s'},2700);
+    setStyle('#chocB',{transform:'translate(-282px, 138px) rotate(-20deg)',transition:'transform .95s cubic-bezier(.22,1,.36,1)'},2100);
+    setStyle('#chocB',{opacity:'0',transition:'opacity .45s ease .55s'},2900);
+    later(()=>{const g=document.getElementById('steamG');g.style.transition='opacity .5s';g.setAttribute('opacity','1');},2700);
+    setStyle('#gbowl .bowl-fill',{fill:'#4E342E',transition:'fill 1.2s',opacity:'1'},3200);
+    reveal('#stirSpoon','in',3600);
+    showCO('Stir until smooth and glossy.','搅拌到顺滑有光泽。',3800,'🥄');
+    later(()=>{const w=sceneEl.querySelector('#stirSpoon .whisk-circle');if(w)w.classList.remove('whisk-circle');},5000);
+  }
+});
+
+/* 5. 加入细砂糖 */
+STEPS.push({
+  stage:'布朗尼', stageEn:'Brownie', name:'加入细砂糖', nameEn:'Add the Sugar',
+  recipe:'把细砂糖从碗上方撒入，然后放到一边。',
+  recipeEn:'Sprinkle caster sugar in from above, then set aside.',
+  uses:{sugar:40},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}<g id="gbowl">${glassBowl(450, 340, 150, '#4E342E', 1)}</g><g id="sugB" data-fly="sugar" style="transform-box:fill-box;transform-origin:center"><path d="M560 150 L640 150 L652 220 L548 220 Z" fill="#EFEBE9" stroke="#D7CCC8" stroke-width="2"/><text x="600" y="192" text-anchor="middle" font-size="14" font-weight="700" fill="#8D6E63">Sugar</text></g><g id="sugarFlow" opacity="0"></g></svg>`;
+    reveal('#gbowl','in',100);
+    later(()=>{ addSceneTag(600, 185, '细砂糖', 'r'); }, 1100);
+    showCO('Add the caster sugar.','加入细砂糖。',1300,'🍚');
+    setStyle('#sugB',{transform:'translate(-150px, 95px) rotate(-55deg)',transition:'transform .95s cubic-bezier(.4,0,.2,1)'},1900);
+    later(()=>{
+      const g=document.getElementById('sugarFlow');
+      g.setAttribute('opacity','1');
+      let s='';for(let i=0;i<28;i++){const x=400+Math.random()*100;const y=290+Math.random()*30;s+=`<circle cx="${x}" cy="${y}" r="${1.5+Math.random()*2}" fill="#FAFAFA" opacity=".9"/>`;}g.innerHTML=s;
+    },2500);
+    setStyle('#sugarFlow circle',{animation:'fup 1.3s ease-out infinite'},2550);
+    later(()=>{document.getElementById('sugarFlow').setAttribute('opacity','0');},3800);
+    setStyle('#sugB',{opacity:'0',transition:'opacity .5s ease .2s'},3400);
+    showCO('Stir to combine.','搅拌均匀。',3200,'🥄');
+  }
+});
+
+/* 6. 加入鸡蛋 */
+STEPS.push({
+  stage:'布朗尼', stageEn:'Brownie', name:'加入鸡蛋', nameEn:'Add the Egg',
+  recipe:'把鸡蛋移到碗上方，轻轻磕开，让蛋黄和蛋白落进面糊。',
+  recipeEn:'Move the egg over the bowl, crack it open, and let the yolk and white drop in.',
+  uses:{egg:1},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}<g id="gbowl">${glassBowl(450, 340, 150, '#5D4037', 1)}</g>
+      <g data-fly="egg"><g id="eggWhole" style="transform-box:fill-box;transform-origin:center;transition:transform .7s cubic-bezier(.22,1,.36,1),opacity .3s ease"><ellipse cx="720" cy="150" rx="34" ry="44" fill="#FFE0B2" stroke="#E0B784" stroke-width="2"/><ellipse cx="710" cy="136" rx="12" ry="18" fill="#FFFFFF" opacity=".35"/></g></g>
+      <g id="eggHalves" style="opacity:0;transition:opacity .2s ease">
+        <g id="halfTop" style="transform-box:fill-box;transform-origin:50% 100%;transition:transform .45s cubic-bezier(.34,1.56,.64,1)"><path d="M466,202 A34,44 0 0 0 534,202 L522,197 L512,203 L500,197 L488,203 L478,197 Z" fill="#FFE0B2" stroke="#E0B784" stroke-width="2"/></g>
+        <g id="halfBot" style="transform-box:fill-box;transform-origin:50% 0%;transition:transform .45s cubic-bezier(.34,1.56,.64,1)"><path d="M466,202 A34,44 0 0 1 534,202 L522,207 L512,201 L500,207 L488,201 L478,207 Z" fill="#FFF3E0" stroke="#E0B784" stroke-width="2"/></g>
+      </g>
+      <g id="eggDrop" style="opacity:0;transition:opacity .2s ease"><g id="eggDropG" style="transform-box:fill-box;transform-origin:center;transition:transform .65s cubic-bezier(.5,0,.75,.4)"><circle cx="500" cy="214" r="17" fill="#FFB300" stroke="#F9A825" stroke-width="1.2"/><path d="M474,208 Q494,192 512,202 Q528,214 512,228 Q492,238 474,224 Q464,214 474,208 Z" fill="#FFFFFF" opacity=".92"/></g></g>
+    </svg>`;
+    reveal('#gbowl','in',100);
+    later(()=>{
+      addSceneTag(720, 195, '鸡蛋', 'r');
+      showCO('Crack the egg open.','敲开鸡蛋。',0,'🥚');
+    }, 1100);
+    setStyle('#eggWhole',{transform:'translate(-220px, 50px) rotate(-18deg)'},1150);
+    later(()=>{ setStyle('#eggWhole',{opacity:'0'},1800); setStyle('#eggHalves',{opacity:'1'},1850); },1800);
+    later(()=>{ setStyle('#halfTop',{transform:'rotate(-58deg)'},1950); setStyle('#halfBot',{transform:'rotate(34deg)'},1950); },1950);
+    later(()=>{ setStyle('#eggDrop',{opacity:'1'},2200); setStyle('#eggDropG',{transform:'translate(0, 108px) scale(.95)'},2350); },2200);
+    later(()=>{ setStyle('#eggHalves',{opacity:'0'},2900); setStyle('#eggDrop',{opacity:'0'},2900); },2900);
+    showCO('Add both the yolk and the white.','蛋黄和蛋清都加进去。',2600,'🍳');
+    showCO('Whisk quickly until combined.','快速搅匀。',3300,'🥄');
+    setStyle('#gbowl .bowl-fill',{fill:'#6D4C41',transition:'fill .9s'},3200);
+  }
+});
+
+/* 7. 筛入粉类 */
+STEPS.push({
+  stage:'布朗尼', stageEn:'Brownie', name:'筛入粉类', nameEn:'Sift in the Dry Ingredients',
+  recipe:'依次筛入低筋面粉、可可粉和盐。',
+  recipeEn:'Sift in cake flour, cocoa powder, then salt.',
+  uses:{flour:30, cocoa:10, salt:0.5},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}<g id="gbowl">${glassBowl(450, 340, 150, '#6D4C41', 1)}</g><g id="sieve">${sieve(450, 225, 80)}</g>
+      <g id="bagFlour" data-fly="flour" style="transform-box:fill-box;transform-origin:center"><path d="M60 100 L140 100 L150 190 L50 190 Z" fill="#FFF3E0" stroke="#D7CCC8" stroke-width="2"/><rect x="56" y="88" width="88" height="16" rx="4" fill="#D7CCC8"/><text x="100" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#8D6E63">低筋面粉</text></g>
+      <g id="bagCocoa" data-fly="cocoa" style="transform-box:fill-box;transform-origin:center"><path d="M760 100 L840 100 L850 190 L750 190 Z" fill="#5D4037" stroke="#3E2723" stroke-width="2"/><rect x="756" y="88" width="88" height="16" rx="4" fill="#3E2723"/><text x="800" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#FFF3E0">可可粉</text></g>
+      <g id="bagSalt" data-fly="salt" style="transform-box:fill-box;transform-origin:center"><path d="M690 200 L750 200 L758 270 L682 270 Z" fill="#FAFAFA" stroke="#CFD8DC" stroke-width="2"/><text x="720" y="242" text-anchor="middle" font-size="12" font-weight="700" fill="#8D6E63">盐</text></g>
+      <g id="powderP" opacity="0"></g><g id="cocoaP" opacity="0"></g><g id="saltP" opacity="0"></g>
+      <g id="powderTop" opacity="0"><path d="M380 320 Q450 306 520 320 Q520 336 450 336 Q380 336 380 320 Z" fill="#FFF3E0"/><path d="M400 318 Q450 306 500 318 Q500 330 450 330 Q400 330 400 318 Z" fill="#5D4037" opacity=".6"/><path d="M420 316 Q450 306 480 316 Q480 324 450 324 Q420 324 420 316 Z" fill="#FAFAFA" opacity=".7"/></g>
+    </svg>`;
+    reveal('#gbowl','in',100);
+    reveal('#sieve','in',700);
+    later(()=>{
+      addSceneTag(100, 145, '低筋面粉', 'l');
+      addSceneTag(800, 145, '可可粉', 'r');
+      addSceneTag(720, 242, '盐', 'r');
+    }, 1200);
+    showCO('Sift the cake flour.','筛入低筋面粉。',1400,'🌾');
+    setStyle('#bagFlour',{transform:'translate(295px, 40px) rotate(-35deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},1900);
+    later(()=>{ const g=document.getElementById('powderP');g.setAttribute('opacity','1'); let s='';for(let i=0;i<22;i++){const x=400+Math.random()*100;const y=220+Math.random()*80;s+=`<circle cx="${x}" cy="${y}" r="${1.5+Math.random()*2}" fill="#FFF3E0" opacity=".9"/>`;}g.innerHTML=s; },2500);
+    setStyle('#powderP circle',{animation:'fup 1.3s ease-out infinite'},2550);
+    later(()=>{document.getElementById('powderP').setAttribute('opacity','0');},3800);
+    setStyle('#bagFlour',{opacity:'0',transition:'opacity .5s ease .2s'},3500);
+    showCO('Sift the cocoa powder.','筛入可可粉。',4000,'🍫');
+    setStyle('#bagCocoa',{transform:'translate(-260px, 40px) rotate(35deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},4500);
+    later(()=>{ const g=document.getElementById('cocoaP');g.setAttribute('opacity','1'); let s='';for(let i=0;i<20;i++){const x=400+Math.random()*100;const y=220+Math.random()*80;s+=`<circle cx="${x}" cy="${y}" r="${1.5+Math.random()*2}" fill="#5D4037" opacity=".9"/>`;}g.innerHTML=s; },5100);
+    setStyle('#cocoaP circle',{animation:'fup 1.3s ease-out infinite'},5150);
+    later(()=>{document.getElementById('cocoaP').setAttribute('opacity','0');},6400);
+    setStyle('#bagCocoa',{opacity:'0',transition:'opacity .5s ease .2s'},6100);
+    showCO('Sift the salt.','筛入盐。',6600,'🧂');
+    setStyle('#bagSalt',{transform:'translate(-200px, -20px) rotate(35deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},7100);
+    later(()=>{ const g=document.getElementById('saltP');g.setAttribute('opacity','1'); let s='';for(let i=0;i<14;i++){const x=415+Math.random()*70;const y=220+Math.random()*80;s+=`<circle cx="${x}" cy="${y}" r="1.3" fill="#FAFAFA" opacity=".95"/>`;}g.innerHTML=s; },7700);
+    setStyle('#saltP circle',{animation:'fup 1.2s ease-out infinite'},7750);
+    later(()=>{document.getElementById('saltP').setAttribute('opacity','0');},8900);
+    setStyle('#bagSalt',{opacity:'0',transition:'opacity .5s ease .2s'},8600);
+    later(()=>{const g=document.getElementById('powderTop');g.style.transition='opacity .5s';g.setAttribute('opacity','1');},9100);
+    later(()=>{const s=document.getElementById('sieve');s.style.transition='opacity .5s';s.style.opacity='0';},9300);
+    showCO('The dry ingredients rest on the batter.','粉类铺在面糊上，还没混合。',9600,'⏳');
+  }
+});
+
+/* 8. 翻拌成面糊 */
+STEPS.push({
+  stage:'布朗尼', stageEn:'Brownie', name:'翻拌成面糊', nameEn:'Fold into Batter',
+  recipe:'用打蛋器在碗里画小圈，把粉和面糊拌匀。',
+  recipeEn:'Whisk in small circles to blend the powder into the batter.',
+  uses:{whisk_t:0},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}<g id="gbowl">${glassBowl(450, 340, 150, '#6D4C41', 1)}</g><g id="whiskH" data-fly="whisk_t">${whiskG(700, 240, 125, 0)}</g><text id="endTag" x="450" y="452" text-anchor="middle" font-size="16" fill="#8D6E63" opacity="0">无干粉 ✓</text></svg>`;
+    reveal('#gbowl','in',100);
+    later(()=>{ addSceneTag(700, 300, '打蛋器', 'r'); }, 1200);
+    setStyle('#whiskH',{transform:'translate(-250px, 90px)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},1900);
+    showCO('Fold with a whisk.','用打蛋器翻拌。', 2200,'🥄');
+    later(()=>{const w=sceneEl.querySelector('#whiskH .wg');if(w)w.classList.add('stir-small');},2800);
+    showCO('Fold gently and quickly.','轻快翻拌，避免消泡。',3400,'💨');
+    setStyle('#gbowl .bowl-fill',{fill:'#6D4C41',transition:'fill 1.6s'},3800);
+    later(()=>{const t=document.getElementById('endTag');t.style.transition='opacity .5s';t.setAttribute('opacity','1');},5400);
+    later(()=>{const w=sceneEl.querySelector('#whiskH .wg');if(w)w.classList.remove('stir-small');},5500);
+  }
+});
+
+/* 9. 倒入模具 */
+STEPS.push({
+  stage:'布朗尼', stageEn:'Brownie', name:'倒入模具', nameEn:'Pour into the Pan',
+  recipe:'把碗移到模具上方，倾斜让面糊竖直流入模具。',
+  recipeEn:'Move the bowl above the mold, tilt it and let the batter pour straight down.',
+  uses:{mold:0},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}<g id="mold" data-fly="mold"><rect x="520" y="290" width="230" height="90" rx="8" fill="#B0BEC5"/><rect x="532" y="302" width="206" height="66" rx="5" fill="#CFD8DC"/><ellipse cx="635" cy="290" rx="115" ry="17" fill="#90A4AE"/><ellipse cx="635" cy="290" rx="105" ry="13" fill="#ECEFF1"/><text x="635" y="408" text-anchor="middle" font-size="14" fill="#8D6E63">6寸加高圆模</text></g><defs><clipPath id="moldClipA"><rect x="530" y="276" width="210" height="80" rx="6"/></clipPath></defs><g clip-path="url(#moldClipA)"><rect id="batterMold" x="530" y="290" width="210" height="0" fill="#6D4C41"/></g><path id="pourStream" d="M648 250 Q660 270 652 300" stroke="#6D4C41" stroke-width="15" stroke-linecap="round" fill="none" opacity="0"/><g id="gbowl" style="transform-box:fill-box;transform-origin:center">${glassBowl(330, 262, 95, '#6D4C41', 1)}</g></svg>`;
+    later(()=>{ addSceneTag(635, 330, '6寸加高圆模', 'r'); }, 1200);
+    showCO('Pour the batter into the mold.','把面糊倒进模具。',1500,'🥣');
+    setStyle('#gbowl',{transition:'transform 1s cubic-bezier(.4,0,.2,1)',transform:'translate(310px, -85px)'},2100);
+    setStyle('#gbowl',{transition:'transform .65s cubic-bezier(.34,1.2,.64,1)',transform:'translate(310px, -85px) rotate(46deg)'},3200);
+    later(()=>{const s=document.getElementById('pourStream');s.style.transition='opacity .3s';s.setAttribute('opacity','1');},3800);
+    setStyle('#batterMold',{y:'268', height:'46', transition:'all 1.5s ease-out'},4000);
+    setStyle('#gbowl .bowl-fill',{opacity:'0.55', transition:'opacity 1.2s'},4100);
+    setStyle('#gbowl .bowl-fill',{opacity:'0', transition:'opacity .8s'},5300);
+    later(()=>{document.getElementById('pourStream').setAttribute('opacity','0');},5900);
+    setStyle('#gbowl',{transition:'transform .9s cubic-bezier(.4,0,.2,1)',transform:'translate(120px, -30px) rotate(10deg)'},6100);
+    setStyle('#gbowl',{opacity:'0', transition:'opacity .7s ease .5s'},6100);
+    showCO('Smooth the top — ready to bake.','表面刮平，准备烘烤。',6300,'✅');
+  }
+});
+
+/* 10. 烘烤布朗尼 */
+STEPS.push({
+  stage:'布朗尼', stageEn:'Brownie', name:'烘烤布朗尼 18 分钟', nameEn:'Bake Brownie 18 min',
+  recipe:'180°C 烘烤 15–18 分钟（演示加速）。',
+  recipeEn:'Bake at 180°C for 15–18 min (demo sped up).',
+  uses:{},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}<rect x="0" y="0" width="900" height="500" fill="#FDF6EC"/><rect x="230" y="70" width="440" height="380" rx="20" fill="#B0BEC5"/><rect x="246" y="86" width="408" height="348" rx="14" fill="#90A4AE"/><rect x="272" y="132" width="356" height="248" rx="10" fill="#37474F"/><rect id="heat" x="272" y="132" width="356" height="248" rx="10" fill="url(#ovenGlow)" opacity="0"/><line x1="284" y1="330" x2="616" y2="330" stroke="#78909C" stroke-width="4"/><g id="ckOv" opacity="0"><rect x="370" y="290" width="160" height="42" rx="6" fill="#455A64"/><rect id="ckTop" x="378" y="286" width="144" height="18" rx="4" fill="#A1887F"/></g><g id="door"><rect x="272" y="132" width="356" height="248" rx="10" fill="#546E7A" opacity=".3"/><rect x="300" y="164" width="300" height="184" rx="8" fill="#90A4AE" opacity=".16"/><rect x="400" y="378" width="100" height="9" rx="4" fill="#B0BEC5"/></g><g id="timerBox" opacity="0"><rect x="640" y="96" width="140" height="48" rx="10" fill="#263238"/><text x="710" y="128" text-anchor="middle" font-family="monospace" font-size="24" fill="#FFD54F">18:00</text></g><g id="steamB" opacity="0"><ellipse class="steam" cx="410" cy="280" rx="10" ry="18" fill="#FFF8E1" opacity=".55"/><ellipse class="steam" cx="450" cy="280" rx="10" ry="18" fill="#FFF8E1" opacity=".55" style="animation-delay:.8s"/><ellipse class="steam" cx="490" cy="280" rx="10" ry="18" fill="#FFF8E1" opacity=".55" style="animation-delay:1.6s"/></g><text id="doneTag" x="450" y="480" text-anchor="middle" font-size="17" fill="#8D6E63" opacity="0"></text></svg>`;
+    showCO('Preheat to 180°C — bake 18 minutes.','预热 180°C，烤 18 分钟（演示加速）。',200,'🔥');
+    later(()=>{const c=document.getElementById('ckOv');c.style.transition='opacity .5s';c.setAttribute('opacity','1');},500);
+    later(()=>{ document.getElementById('heat').style.transition='opacity .8s'; document.getElementById('heat').setAttribute('opacity','.4'); document.getElementById('timerBox').style.transition='opacity .4s'; document.getElementById('timerBox').setAttribute('opacity','1'); },900);
+    setStyle('#ckTop',{y:'274',height:'28',transition:'all 2.8s ease-out'},1000);
+    setStyle('#ckTop',{fill:'#8D6E63',transition:'fill 2s'},1800);
+    setStyle('#ckTop',{fill:'#4E342E',transition:'fill 1.2s'},3200);
+    later(()=>{ document.getElementById('heat').setAttribute('opacity','0'); const d=document.getElementById('door'); d.style.transition='transform .8s cubic-bezier(.22,1,.36,1)'; d.style.transform='translateX(360px)'; },4700);
+    later(()=>{const s=document.getElementById('steamB');s.style.transition='opacity .5s';s.setAttribute('opacity','1');},5200);
+    later(()=>{ const t=document.getElementById('doneTag'); t.style.transition='opacity .6s';t.setAttribute('opacity','1'); t.textContent='布朗尼出炉 ✓ 牙签带少量湿润屑即可'; },5500);
+  }
+});
+
+/* 11. 戚风标题 */
+STEPS.push({
+  isTitle:true, stage:'戚风', stageEn:'Chiffon', name:'制作戚风蛋糕胚', nameEn:'Make the Chiffon Cake',
+  recipe:'接下来做三片柔软的巧克力蛋糕。', recipeEn:'Next: three soft chocolate cake layers.',
+  uses:{}, build(){ titleCard(2,'戚风蛋糕胚','Chiffon Cake','接下来做三片柔软的巧克力蛋糕','Next: three soft chocolate cake layers'); }
+});
+
+/* 12. 制作蛋黄糊 */
+STEPS.push({
+  stage:'戚风', stageEn:'Chiffon', name:'制作蛋黄糊', nameEn:'Make the Yolk Batter',
+  recipe:'牛奶、玉米油、蛋糕粉、可可粉依次加入，再加蛋黄搅拌。',
+  recipeEn:'Add milk, oil, cake flour and cocoa, then yolks, and whisk.',
+  uses:{egg:3, milk:45, oil:30, flour:45, cocoa:10},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}<g id="bowlY">${bowl(430, 340, 125, '#FFF3E0', 1)}<text x="430" y="414" text-anchor="middle" font-size="14" fill="#8D6E63">蛋黄糊 Yolk batter</text></g>
+      <g id="milkBox" data-fly="milk" style="transform-box:fill-box;transform-origin:center"><path d="M82 60 L158 60 L162 140 L78 140 Z" fill="#FFFFFF" stroke="#CFD8DC" stroke-width="2"/><path d="M82 60 L158 60 L148 42 L92 42 Z" fill="#ECEFF1" stroke="#CFD8DC" stroke-width="1.5"/><text x="120" y="104" text-anchor="middle" font-size="13" font-weight="700" fill="#1565C0">Milk</text></g>
+      <path id="milkStream" d="M86 64 Q120 200 400 318" stroke="#FAFAFA" stroke-width="11" stroke-linecap="round" fill="none" opacity="0"/>
+      <g id="oilBottle" data-fly="oil" style="transform-box:fill-box;transform-origin:center"><rect x="712" y="66" width="30" height="40" rx="4" fill="#FFF59D" stroke="#E6C34A" stroke-width="2"/><rect x="722" y="48" width="10" height="20" rx="3" fill="#E6C34A"/><text x="727" y="130" text-anchor="middle" font-size="11" fill="#8D6E63">油</text></g>
+      <path id="oilStream" d="M722 70 Q700 200 500 318" stroke="#FFF59D" stroke-width="8" stroke-linecap="round" fill="none" opacity="0"/>
+      <g id="flourBag" data-fly="flour" style="transform-box:fill-box;transform-origin:center"><path d="M640 120 L700 120 L710 200 L630 200 Z" fill="#FFF3E0" stroke="#D7CCC8" stroke-width="2"/><text x="670" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#8D6E63">面粉</text></g>
+      <g id="cocoaBag" data-fly="cocoa" style="transform-box:fill-box;transform-origin:center"><path d="M720 120 L780 120 L788 200 L712 200 Z" fill="#6D4C41" stroke="#5D4037" stroke-width="2"/><text x="750" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="#FFF3E0">可可粉</text></g>
+      <g id="flourFlow" opacity="0"></g><g id="cocoaFlow" opacity="0"></g><g id="whiskY" style="opacity:0">${whiskG(430, 330, 118, 0)}</g>
+      <g data-fly="egg"><g id="eggY" style="transform-box:fill-box;transform-origin:center;transition:transform .65s cubic-bezier(.34,1.2,.64,1), opacity .35s ease"><ellipse cx="770" cy="300" rx="26" ry="33" fill="#FFE0B2" stroke="#E0B784" stroke-width="2"/></g></g>
+      <g id="yolkD" style="opacity:0;transition:opacity .25s ease"><g id="yolkDG" style="transform-box:fill-box;transform-origin:center;transition:transform .8s cubic-bezier(.5,0,.75,.4)"><circle cx="770" cy="300" r="15" fill="#FFB300" stroke="#F9A825" stroke-width="1"/><path d="M750 296 Q770 286 788 296 Q790 312 770 318 Q750 312 750 296 Z" fill="#FFFFFF" opacity=".85"/><circle cx="770" cy="300" r="15" fill="#FFB300" stroke="#F9A825" stroke-width="1"/></g></g></svg>`;
+    reveal('#bowlY','in',100);
+    later(()=>{ addSceneTag(120, 100, '牛奶', 'l'); addSceneTag(727, 105, '玉米油', 'r'); addSceneTag(670, 160, '低筋面粉', 'l'); addSceneTag(750, 160, '可可粉', 'r'); addSceneTag(770, 340, '鸡蛋', 'r'); }, 1500);
+    showCO('Pour in the milk.','倒入牛奶。',1800,'🥛');
+    setStyle('#milkBox',{transform:'translate(310px, 210px) rotate(-35deg)',transition:'transform .9s cubic-bezier(.4,0,.2,1)'},2400);
+    setStyle('#bowlY .bowl-fill',{fill:'#FFFFFF',transition:'fill 1.2s'},3000);
+    setStyle('#milkBox',{opacity:'0',transition:'opacity .5s ease .3s'},2900);
+    showCO('Pour in the corn oil.','倒入玉米油。',3500,'🫗');
+    setStyle('#oilBottle',{transform:'translate(-260px, 210px) rotate(35deg)',transition:'transform .9s cubic-bezier(.4,0,.2,1)'},4100);
+    setStyle('#bowlY .bowl-fill',{fill:'#FFFDE7',transition:'fill 1.2s'},4700);
+    setStyle('#oilBottle',{opacity:'0',transition:'opacity .5s ease .3s'},4600);
+    showCO('Sift in the cake flour.','筛入蛋糕粉。',5200,'🌾');
+    setStyle('#flourBag',{transform:'translate(-190px, 130px) rotate(-40deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},5800);
+    later(()=>{ const g=document.getElementById('flourFlow');g.setAttribute('opacity','1'); let s='';for(let i=0;i<20;i++){const x=390+Math.random()*90;const y=230+Math.random()*70;s+=`<circle cx="${x}" cy="${y}" r="${1.5+Math.random()*2}" fill="#FFF3E0" opacity=".9"/>`;}g.innerHTML=s; },6300);
+    setStyle('#flourFlow circle',{animation:'fup 1.2s ease-out infinite'},6350);
+    later(()=>{document.getElementById('flourFlow').setAttribute('opacity','0');},7400);
+    setStyle('#flourBag',{opacity:'0',transition:'opacity .5s ease .2s'},7100);
+    showCO('Sift in the cocoa powder.','筛入可可粉。',7600,'🍫');
+    setStyle('#cocoaBag',{transform:'translate(-300px, 130px) rotate(40deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},8200);
+    later(()=>{ const g=document.getElementById('cocoaFlow');g.setAttribute('opacity','1'); let s='';for(let i=0;i<18;i++){const x=390+Math.random()*90;const y=230+Math.random()*70;s+=`<circle cx="${x}" cy="${y}" r="${1.5+Math.random()*2}" fill="#5D4037" opacity=".9"/>`;}g.innerHTML=s; },8700);
+    setStyle('#cocoaFlow circle',{animation:'fup 1.2s ease-out infinite'},8750);
+    later(()=>{document.getElementById('cocoaFlow').setAttribute('opacity','0');},9800);
+    setStyle('#cocoaBag',{opacity:'0',transition:'opacity .5s ease .2s'},9500);
+    setStyle('#bowlY .bowl-fill',{fill:'#F5E0B7',transition:'fill 1.2s'},9300);
+    showCO('Whisk to combine.','搅拌融合。',10000,'🥄');
+    later(()=>{const wk=document.getElementById('whiskY');wk.style.transition='opacity .4s';wk.style.opacity='1';},10200);
+    later(()=>{const w=sceneEl.querySelector('#whiskY .wg');if(w)w.classList.add('stir-small');},10600);
+    showCO('Crack the egg, drop the yolks in.','敲开鸡蛋，把蛋黄落入面糊。',11200,'🥚');
+    later(()=>{ setStyle('#eggY',{transform:'rotate(-70deg)'},11800); },0);
+    later(()=>{ setStyle('#eggY',{opacity:'0'},12500); },0);
+    later(()=>{ setStyle('#yolkD',{opacity:'1'},12600); },0);
+    later(()=>{ setStyle('#yolkDG',{transform:'translate(-340px, 16px)'},12900); },0);
+    later(()=>{ setStyle('#yolkD',{opacity:'0'},13700); },0);
+    setStyle('#bowlY .bowl-fill',{fill:'#FFCA28',transition:'fill 1.2s'},13600);
+    later(()=>{const w=sceneEl.querySelector('#whiskY .wg');if(w)w.classList.remove('stir-small');},14200);
+    showCO('Yolk batter is ready.','蛋黄糊做好了。',14300,'✅');
+  }
+});
+
+/* 13. 打发蛋白（5秒搅拌 + 三次加糖同步 + 立刻提起） */
+STEPS.push({
+  stage:'戚风', stageEn:'Chiffon', name:'打发蛋白', nameEn:'Beat the Egg Whites',
+  recipe:'蛋白分三次加糖打发，直到出现软尖角。',
+  recipeEn:'Beat egg whites with sugar in three batches until soft peaks form.',
+  uses:{sugar:45, lemon:3, whisk_t:0},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}
+      <g id="bowlW">${bowl(450, 340, 150, '#FFFDE7', 1)}<text x="450" y="414" text-anchor="middle" font-size="14" fill="#8D6E63">蛋白 Egg whites</text></g>
+      <g id="whiskW" data-fly="whisk_t">
+        <g id="whiskWMotion">
+          ${whiskG(240, 240, 145, 0)}
+        </g>
+      </g>
+      <g id="sugJar" data-fly="sugar" style="transform-box:fill-box;transform-origin:center">
+        <path d="M730 250 L790 250 L802 320 L718 320 Z" fill="#EFEBE9" stroke="#D7CCC8" stroke-width="2"/>
+        <text x="760" y="290" text-anchor="middle" font-size="12" font-weight="700" fill="#8D6E63">砂糖</text>
+      </g>
+      <g id="lemonB" data-fly="lemon" style="transform-box:fill-box;transform-origin:center">
+        <circle cx="800" cy="190" r="24" fill="#FFF59D" stroke="#E6C34A" stroke-width="2"/>
+        <text x="800" y="194" text-anchor="middle" font-size="11" font-weight="700" fill="#8D6E63">柠檬</text>
+      </g>
+      <g id="foamG" opacity="0"></g>
+      <g id="sugarFlow" opacity="0"></g>
+      <g id="meringue" style="opacity:0;transition:opacity .4s, transform .9s cubic-bezier(.34,1.56,.64,1)">
+        <path d="${dropShape(450, 353.5, 23, 90)}" fill="#FFFDF8" fill-opacity="1" stroke="#E8D5B7" stroke-width="2"/>
+      </g>
+    </svg>`;
+
+    later(()=>{ addSceneTag(240, 300, '打蛋器', 'l'); addSceneTag(760, 340, '细砂糖', 'r'); addSceneTag(800, 230, '柠檬汁', 'r'); }, 1500);
+
+    setStyle('#whiskW',{transform:'translate(210px, 90px)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},2200);
+    showCO('Beat the egg whites.','打发蛋白。',2600,'🥄');
+
+    later(()=>{
+      setStyle('#lemonB',{transform:'translate(-350px, 120px) rotate(-40deg)',transition:'transform .8s cubic-bezier(.4,0,.2,1)'},0);
+    }, 2900);
+    later(()=>{
+      setStyle('#lemonB',{opacity:'0',transition:'opacity .4s ease .3s'},0);
+    }, 3700);
+
+    later(()=>{
+      const m = document.getElementById('whiskWMotion');
+      if(m) m.style.animation = 'whiskStir .8s linear infinite';
+    }, 4000);
+    showCO('Beat for 5 seconds.','打发5秒（演示）。',4000,'⚡');
+    showCO('Add sugar in three batches.','分三次加入砂糖。',4100,'🍚');
+
+    const pourAt = (t) => {
+      later(()=>{
+        setStyle('#sugJar',{transform:'translate(-260px, -35px) rotate(-65deg)',transition:'transform .5s cubic-bezier(.4,0,.2,1)'},0);
+      }, t);
+      later(()=>{
+        const g = document.getElementById('sugarFlow');
+        if(g){
+          g.setAttribute('opacity','1');
+          let s='';
+          for(let i=0;i<18;i++){
+            const x=420+Math.random()*60;
+            const y=290+Math.random()*30;
+            s+=`<circle cx="${x}" cy="${y}" r="${1.5+Math.random()*2}" fill="#FAFAFA" opacity=".9"/>`;
+          }
+          g.innerHTML=s;
+        }
+      }, t+400);
+      setStyle('#sugarFlow circle',{animation:'fup 1.2s ease-out infinite'}, t+450);
+      later(()=>{
+        const g = document.getElementById('sugarFlow');
+        if(g) g.setAttribute('opacity','0');
+        setStyle('#sugJar',{transform:'translate(-260px, -35px) rotate(-10deg)',transition:'transform .4s'},0);
+      }, t+750);
+    };
+
+    pourAt(4300);
+    pourAt(5500);
+    pourAt(6700);
+
+    later(()=>{
+      setStyle('#sugJar',{opacity:'0',transition:'opacity .5s'},0);
+    }, 7800);
+
+    const stages=[{t:4600,b:10,r:2,f:'#FFFDE7'},{t:6000,b:18,r:3,f:'#FFF9C4'},{t:7400,b:26,r:4,f:'#FFF3E0'}];
+    stages.forEach((st)=>{
+      later(()=>{
+        const g=document.getElementById('foamG');g.setAttribute('opacity','1');
+        let s='';
+        for(let i=0;i<st.b;i++){
+          const x=320+Math.random()*260;const y=318+Math.random()*30;
+          s+=`<circle cx="${x}" cy="${y}" r="${st.r+Math.random()*1.5}" fill="${st.f}" opacity=".85"/>`;
+        }
+        g.innerHTML=s;
+      },st.t);
+    });
+
+    showCO('Soft peaks form.','打发到软尖角。',9000,'🏔️');
+    later(()=>{
+      const m = document.getElementById('whiskWMotion');
+      if(m) m.style.animation = 'none';
+      const f = document.getElementById('foamG');
+      if(f) f.setAttribute('opacity','0');
+      setStyle('#meringue', {opacity:'1'}, 0);
+      setStyle('#whiskW', {transform:'translate(210px, 12px)'}, 0);
+      setStyle('#meringue', {transform:'translateY(-78px)'}, 0);
+    }, 9000);
+  }
+});
+
+/* 14. 混合蛋黄糊与蛋白霜 */
+STEPS.push({
+  stage:'戚风', stageEn:'Chiffon', name:'混合蛋黄糊与蛋白霜', nameEn:'Fold Yolk Batter & Meringue',
+  recipe:'取 1/3 蛋白霜拌入蛋黄糊，再倒回蛋白霜碗，最后把蛋白霜碗移到模具上方倒入。',
+  recipeEn:'Fold 1/3 meringue into the yolk batter, pour it back, then move the meringue bowl above the mold and pour.',
+  uses:{},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}<g id="bowlY2">${bowl(160, 350, 92, '#FFCA28', 1)}<text x="160" y="410" text-anchor="middle" font-size="13" fill="#8D6E63">蛋黄糊</text></g><g id="bowlW2" style="transform-box:fill-box;transform-origin:center">${bowl(748, 350, 92, '#FFFFFF', 1)}<text x="748" y="410" text-anchor="middle" font-size="13" fill="#8D6E63">蛋白霜</text></g><g id="moldF"><rect x="400" y="252" width="140" height="90" rx="8" fill="#B0BEC5"/><rect x="408" y="262" width="124" height="72" rx="5" fill="#CFD8DC"/><ellipse cx="470" cy="252" rx="70" ry="12" fill="#90A4AE"/><ellipse cx="470" cy="252" rx="63" ry="9" fill="#ECEFF1"/><text x="470" y="364" text-anchor="middle" font-size="13" fill="#8D6E63">模具</text></g><defs><clipPath id="moldClipB"><rect x="406" y="240" width="128" height="76" rx="5"/></clipPath></defs><g clip-path="url(#moldClipB)"><rect id="batterM2" x="406" y="252" width="128" height="0" fill="#8D6E63"/></g><g id="spatula" style="opacity:0;transform-box:fill-box;transform-origin:center"><rect x="195" y="200" width="10" height="90" rx="5" fill="#8D6E63"/><path d="M185 200 L215 200 L213 236 L187 236 Z" fill="#D7A86E" stroke="#B0BEC5" stroke-width="1.5"/></g><path id="streamY" d="M200 320 Q400 240 700 300" stroke="#8D6E63" stroke-width="14" stroke-linecap="round" fill="none" opacity="0"/><path id="streamW" d="M470 240 L470 290" stroke="#8D6E63" stroke-width="14" stroke-linecap="round" fill="none" opacity="0"/></svg>`;
+    reveal('#bowlY2','in',100);
+    reveal('#bowlW2','in',300);
+    reveal('#moldF','in',500);
+    showCO('Fold 1/3 of the meringue into the yolk batter.','取 1/3 蛋白霜拌入蛋黄糊。',400,'🥄');
+    show('#spatula',900,.4);
+    setStyle('#spatula',{transform:'rotate(-22deg)',transition:'transform .6s'},1400);
+    setStyle('#spatula',{transform:'rotate(0deg)',transition:'transform .6s'},2050);
+    setStyle('#bowlY2 .bowl-fill',{fill:'#D7A86E',transition:'fill 1s'},2300);
+    showCO('Pour it back into the meringue.','再倒回蛋白霜碗。',3000,'🫗');
+    later(()=>{const s=document.getElementById('streamY');s.style.transition='opacity .4s';s.setAttribute('opacity','1');},3350);
+    setStyle('#bowlW2 .bowl-fill',{fill:'#D7A86E',transition:'fill 1.6s'},3650);
+    setStyle('#bowlY2 .bowl-fill',{opacity:'0',transition:'opacity 1.2s'},4300);
+    later(()=>{document.getElementById('streamY').setAttribute('opacity','0');},4700);
+    showCO('Pour the batter into the mold.','把面糊倒入模具。',4900,'🥣');
+    setStyle('#bowlW2',{transition:'transform 1.1s cubic-bezier(.4,0,.2,1)',transform:'translate(-278px, -160px)'},5100);
+    setStyle('#bowlW2',{transition:'transform .7s cubic-bezier(.34,1.2,.64,1)',transform:'translate(-278px, -160px) rotate(48deg)'},6300);
+    later(()=>{const s=document.getElementById('streamW');s.style.transition='opacity .35s';s.setAttribute('opacity','1');},7100);
+    setStyle('#batterM2',{y:'240', height:'44', transition:'all 1.5s ease-out'},7300);
+    setStyle('#bowlW2 .bowl-fill',{opacity:'0', transition:'opacity 1.2s'},7400);
+    later(()=>{document.getElementById('streamW').setAttribute('opacity','0');},8900);
+    setStyle('#bowlW2',{opacity:'0', transition:'opacity .7s ease .2s'},8900);
+    showCO('Chiffon batter ready to bake.','戚风面糊准备烘烤。',9200,'✅');
+  }
+});
+
+/* 15. 烘烤戚风 */
+STEPS.push({
+  stage:'戚风', stageEn:'Chiffon', name:'烘烤戚风 50 分钟', nameEn:'Bake Chiffon 50 min',
+  recipe:'150°C 烘烤 45–50 分钟（演示加速），出炉后立刻倒扣。',
+  recipeEn:'Bake at 150°C for 45–50 min (demo sped up), then invert immediately.',
+  uses:{},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}<rect x="0" y="0" width="900" height="500" fill="#FDF6EC"/><rect x="230" y="70" width="440" height="380" rx="20" fill="#B0BEC5"/><rect x="246" y="86" width="408" height="348" rx="14" fill="#90A4AE"/><rect x="272" y="132" width="356" height="248" rx="10" fill="#37474F"/><rect id="heat2" x="272" y="132" width="356" height="248" rx="10" fill="url(#ovenGlow)" opacity="0"/><line x1="284" y1="330" x2="616" y2="330" stroke="#78909C" stroke-width="4"/><g id="ckOv2" style="opacity:0;transform-box:fill-box;transform-origin:center"><rect x="370" y="280" width="160" height="52" rx="6" fill="#455A64"/><rect id="ckTop2" x="378" y="288" width="144" height="16" rx="4" fill="#A1887F"/></g><g id="door2"><rect x="272" y="132" width="356" height="248" rx="10" fill="#546E7A" opacity=".3"/><rect x="300" y="164" width="300" height="184" rx="8" fill="#90A4AE" opacity=".16"/><rect x="400" y="378" width="100" height="9" rx="4" fill="#B0BEC5"/></g><g id="timerBox2" opacity="0"><rect x="640" y="96" width="140" height="48" rx="10" fill="#263238"/><text x="710" y="128" text-anchor="middle" font-family="monospace" font-size="24" fill="#FFD54F">50:00</text></g><text id="invTag" x="30" y="50" text-anchor="start" font-size="22" font-weight="900" fill="#3E2723" opacity="0">倒扣冷却</text><text id="invTagEn" x="30" y="76" text-anchor="start" font-size="14" font-weight="700" fill="#8D6E63" font-style="italic" opacity="0">Inverted to cool</text></svg>`;
+    showCO('Bake at 150°C for 50 minutes.','150°C 烤 50 分钟（演示加速）。',200,'🔥');
+    later(()=>{const c=document.getElementById('ckOv2');c.style.transition='opacity .5s';c.style.opacity='1';},500);
+    later(()=>{ document.getElementById('heat2').style.transition='opacity .8s'; document.getElementById('heat2').setAttribute('opacity','.4'); document.getElementById('timerBox2').style.transition='opacity .4s'; document.getElementById('timerBox2').setAttribute('opacity','1'); },900);
+    setStyle('#ckTop2',{y:'258',height:'42',transition:'all 2.8s ease-out'},1000);
+    setStyle('#ckTop2',{fill:'#8D6E63',transition:'fill 2s'},1800);
+    setStyle('#ckTop2',{fill:'#5D4037',transition:'fill 1.2s'},3200);
+    later(()=>{ document.getElementById('heat2').setAttribute('opacity','0'); const d=document.getElementById('door2'); d.style.transition='transform .8s cubic-bezier(.22,1,.36,1)'; d.style.transform='translateX(360px)'; },4700);
+    showCO('Invert immediately after baking.','出炉后立刻倒扣。',5100,'🙃');
+    setStyle('#ckOv2',{transition:'transform 1s cubic-bezier(.4,0,.2,1)',transform:'translate(-260px, -70px)'},5500);
+    setStyle('#ckOv2',{transition:'transform .9s cubic-bezier(.34,1.2,.64,1)',transform:'translate(-260px, -70px) rotate(180deg)'},6700);
+    later(()=>{
+      ['invTag','invTagEn'].forEach(id=>{
+        const t = document.getElementById(id);
+        if(t){ t.style.transition='opacity .6s'; t.setAttribute('opacity','1'); }
+      });
+    },7700);
+  }
+});
+
+/* 16. 奶油标题 */
+STEPS.push({
+  isTitle:true, stage:'奶油', stageEn:'Cream', name:'制作白巧克力奶油', nameEn:'Make White Chocolate Cream',
+  recipe:'做夹层和抹面用的奶油。', recipeEn:'The cream for filling and coating.',
+  uses:{}, build(){ titleCard(3,'白巧克力奶油','White Chocolate Cream','做夹层和抹面用的奶油','The cream for filling and coating'); }
+});
+
+/* 17. 融化白巧克力与吉利丁 */
+STEPS.push({
+  stage:'奶油', stageEn:'Cream', name:'融化白巧克力与吉利丁', nameEn:'Melt White Chocolate & Gelatin',
+  recipe:'先倒入淡奶油，再把白巧克力和吉利丁放进碗里融合。',
+  recipeEn:'Pour in the cream, then add white chocolate and gelatin, and melt together.',
+  uses:{white_choc:100, gelatin:3, cream:100},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}<g id="gbowl">${glassBowl(450, 340, 150, '#FFF3E0', 0.3)}</g><g id="creamBox" data-fly="cream" style="transform-box:fill-box;transform-origin:center"><path d="M82 60 L158 60 L162 140 L78 140 Z" fill="#FFFDE7" stroke="#E0E0E0" stroke-width="2"/><path d="M82 60 L158 60 L148 42 L92 42 Z" fill="#ECEFF1" stroke="#E0E0E0" stroke-width="1.5"/><text x="120" y="104" text-anchor="middle" font-size="13" font-weight="800" fill="#8D6E63">Cream</text></g><path id="creamStream" d="M86 64 Q120 200 430 318" stroke="#FFFDE7" stroke-width="11" stroke-linecap="round" fill="none" opacity="0"/><g id="wcD" data-fly="white_choc" style="transform-box:fill-box;transform-origin:center">${chocoBar(680,180,58,58,'#F5E6D3')}</g><g id="geD" data-fly="gelatin" style="transform-box:fill-box;transform-origin:center"><rect x="760" y="200" width="60" height="30" rx="4" fill="#E1F5FE" stroke="#B3E5FC" stroke-width="2"/><text x="790" y="220" text-anchor="middle" font-size="11" fill="#0277BD">吉利丁</text></g><g id="stirSpoon2" opacity="0"><g class="whisk-circle" style="transform-origin:450px 330px"><g transform="translate(450 330)"><rect x="-5" y="-118" width="10" height="86" rx="5" fill="#8D6E63"/><ellipse cx="0" cy="-40" rx="20" ry="14" fill="#CFD8DC"/></g></g></g></svg>`;
+    reveal('#gbowl','in',100);
+    later(()=>{ addSceneTag(120, 100, '淡奶油', 'l'); addSceneTag(709, 209, '白巧克力', 'r'); addSceneTag(790, 215, '吉利丁', 'r'); }, 1400);
+    showCO('Pour in the heavy cream.','倒入淡奶油。',1700,'🥛');
+    setStyle('#creamBox',{transform:'translate(330px, 230px) rotate(-35deg)',transition:'transform .9s cubic-bezier(.4,0,.2,1)'},2300);
+    setStyle('#gbowl .bowl-fill',{fill:'#FFFDE7',transition:'fill 1s',opacity:'0.7'},2900);
+    setStyle('#creamBox',{opacity:'0',transition:'opacity .5s ease .3s'},2800);
+    showCO('Add white chocolate and gelatin.','加入白巧克力和吉利丁。',3300,'🍫');
+    setStyle('#wcD',{transform:'translate(-259px, 121px) rotate(20deg)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},3900);
+    setStyle('#wcD',{opacity:'0',transition:'opacity .5s ease .3s'},4600);
+    setStyle('#geD',{transform:'translate(-340px, 115px) rotate(-15deg)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},4100);
+    setStyle('#geD',{opacity:'0',transition:'opacity .5s ease .3s'},4800);
+    setStyle('#gbowl .bowl-fill',{fill:'#FFF8E1',transition:'fill 1.2s',opacity:'1'},4900);
+    reveal('#stirSpoon2','in',5200);
+    showCO('Stir, then cover and chill 4 hours.','搅匀，贴面冷藏 4 小时。',5400,'🧊');
+    later(()=>{const w=sceneEl.querySelector('#stirSpoon2 .whisk-circle');if(w)w.classList.remove('whisk-circle');},6800);
+  }
+});
+
+/* 18. 打发淡奶油并混合（3秒搅拌 + 立刻提起） */
+STEPS.push({
+  stage:'奶油', stageEn:'Cream', name:'打发淡奶油并混合', nameEn:'Whip Cream and Combine',
+  recipe:'加入淡奶油和糖粉，倒入上一步的液体，打发到硬尖角。',
+  recipeEn:'Add cream and sugar, pour in the previous mixture, and whip to firm peaks.',
+  uses:{cream:250, psugar:15, whisk_t:0},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}<g id="bowlC">${bowl(400, 340, 132, '#FFFDE7', 1)}<text x="400" y="412" text-anchor="middle" font-size="14" fill="#8D6E63">白巧克力奶油</text></g><g id="prevBowl">${bowl(720, 250, 78, '#FFF8E1', 1)}<text x="720" y="300" text-anchor="middle" font-size="12" fill="#8D6E63">上一步</text></g><g id="creamD" data-fly="cream" style="transform-box:fill-box;transform-origin:center"><path d="M82 60 L158 60 L162 140 L78 140 Z" fill="#FFFDE7" stroke="#E0E0E0" stroke-width="2"/><path d="M82 60 L158 60 L148 42 L92 42 Z" fill="#ECEFF1" stroke="#E0E0E0" stroke-width="1.5"/><text x="120" y="104" text-anchor="middle" font-size="13" font-weight="800" fill="#8D6E63">Cream</text></g><path id="creamStream2" d="M86 64 Q120 200 380 316" stroke="#FFFDE7" stroke-width="11" stroke-linecap="round" fill="none" opacity="0"/><g id="sugarD" data-fly="psugar" style="transform-box:fill-box;transform-origin:center"><path d="M600 120 L670 120 L682 180 L588 180 Z" fill="#EFEBE9" stroke="#D7CCC8" stroke-width="2"/><text x="635" y="155" text-anchor="middle" font-size="12" font-weight="700" fill="#8D6E63">糖粉</text></g><g id="sugarFlow2" opacity="0"></g><path id="prevStream" d="M640 290 Q560 320 470 328" stroke="#FFF8E1" stroke-width="12" stroke-linecap="round" fill="none" opacity="0"/><g id="whiskC" data-fly="whisk_t">
+        <g id="whiskCMotion">
+          ${whiskG(160, 250, 140, 0)}
+        </g>
+      </g>
+      <g id="creamPeak" style="opacity:0;transition:opacity .4s, transform .9s cubic-bezier(.34,1.56,.64,1)">
+        <path d="${dropShape(400, 365, 23, 90)}" fill="#FFFDF8" fill-opacity="1" stroke="#E8D5B7" stroke-width="2"/>
+      </g>
+    </svg>`;
+    reveal('#bowlC','in',100);
+    reveal('#prevBowl','in',300);
+    later(()=>{ addSceneTag(120, 100, '淡奶油', 'l'); addSceneTag(635, 155, '糖粉', 'r'); addSceneTag(160, 310, '打蛋器', 'l'); }, 1400);
+    showCO('Add heavy cream and powdered sugar.','加入淡奶油和糖粉。',1700,'🥛');
+    setStyle('#creamD',{transform:'translate(280px, 230px) rotate(-35deg)',transition:'transform .9s cubic-bezier(.4,0,.2,1)'},2300);
+    setStyle('#bowlC .bowl-fill',{fill:'#FFFFFF',transition:'fill 1s'},2900);
+    setStyle('#creamD',{opacity:'0',transition:'opacity .5s ease .3s'},2800);
+    setStyle('#sugarD',{transform:'translate(-241px, 180px) rotate(-40deg)',transition:'transform .9s cubic-bezier(.4,0,.2,1)'},3100);
+    setStyle('#bowlC .bowl-fill',{fill:'#FFFDE7',transition:'fill 1s'},3600);
+    setStyle('#sugarD',{opacity:'0',transition:'opacity .5s ease .3s'},3600);
+    showCO('Pour in the previous mixture.','倒入上一步的液体。',4200,'🫗');
+    later(()=>{const s=document.getElementById('prevStream');s.style.transition='opacity .3s';s.setAttribute('opacity','1');},4500);
+    setStyle('#bowlC .bowl-fill',{fill:'#FFF8E1',transition:'fill 1.2s'},5000);
+    setStyle('#prevBowl .bowl-fill',{opacity:'0',transition:'opacity 1s'},5000);
+    later(()=>{document.getElementById('prevStream').setAttribute('opacity','0');},5600);
+
+    setStyle('#whiskC',{transform:'translate(240px, 90px)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},5800);
+    showCO('Whip to firm peaks.','打发到硬尖角。',6400,'🥄');
+
+    later(()=>{
+      const m = document.getElementById('whiskCMotion');
+      if(m) m.style.animation = 'whiskStir .8s linear infinite';
+    }, 6800);
+    showCO('Beat for 3 seconds.','打发3秒（演示）。',6800,'⚡');
+
+    showCO('Firm peaks form.','打发到硬尖角。',9800,'🏔️');
+    later(()=>{
+      const m = document.getElementById('whiskCMotion');
+      if(m) m.style.animation = 'none';
+      setStyle('#creamPeak', {opacity:'1'}, 0);
+      setStyle('#whiskC', {transform:'translate(240px, 12px)'}, 0);
+      setStyle('#creamPeak', {transform:'translateY(-78px)'}, 0);
+    }, 9800);
+
+    showCO('Spread the filling thinly, 2–3 mm.','夹层薄抹，每层 2–3mm。',11200,'🧈');
+  }
+});
+
+/* 19. 夹层标题 */
+STEPS.push({
+  isTitle:true, stage:'夹层', stageEn:'Fillings', name:'制作三种夹层', nameEn:'Make Three Fillings',
+  recipe:'奶冻 · 慕斯 · 黄油薄脆。', recipeEn:'Milk Pudding · Mousse · Butter Crunch.',
+  uses:{}, build(){ titleCard(4,'三种夹层','Three Fillings','奶冻 · 慕斯 · 黄油薄脆','Milk Pudding · Mousse · Butter Crunch'); }
+});
+
+/* 20. 巧克力奶冻 */
+STEPS.push({
+  stage:'夹层', stageEn:'Fillings', name:'制作巧克力奶冻', nameEn:'Make Chocolate Milk Pudding',
+  recipe:'牛奶、奶油、糖加热到60°C，加黑巧克力和吉利丁，过滤后倒入模具冷藏。',
+  recipeEn:'Heat milk, cream and sugar to 60°C; add chocolate and gelatin; strain and pour into the mold.',
+  uses:{milk:100, cream:60, dark_choc:40, sugar:15, gelatin:4},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}
+      <g id="panP">${saucepan(340, 330, 140, '#FAFAFA')}</g>
+      <g id="moldP"><rect x="640" y="230" width="170" height="130" rx="10" fill="#B0BEC5"/><rect x="650" y="240" width="150" height="110" rx="6" fill="#CFD8DC"/><ellipse cx="725" cy="230" rx="85" ry="12" fill="#90A4AE"/><ellipse cx="725" cy="230" rx="78" ry="9" fill="#ECEFF1"/><text x="725" y="380" text-anchor="middle" font-size="13" fill="#8D6E63">6寸模具</text></g>
+      <defs><clipPath id="moldClipC"><rect x="650" y="240" width="150" height="110" rx="6"/></clipPath></defs>
+      <g clip-path="url(#moldClipC)"><rect id="pudL" x="650" y="330" width="150" height="0" fill="#6D4C41"/></g>
+      <g id="milkP" data-fly="milk" style="transform-box:fill-box;transform-origin:center"><path d="M40 40 L100 40 L104 110 L36 110 Z" fill="#FFFFFF" stroke="#CFD8DC" stroke-width="2"/><text x="70" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#1565C0">牛奶</text></g>
+      <g id="creamP" data-fly="cream" style="transform-box:fill-box;transform-origin:center"><path d="M130 40 L190 40 L194 110 L126 110 Z" fill="#FFFDE7" stroke="#E0E0E0" stroke-width="2"/><text x="160" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#8D6E63">奶油</text></g>
+      <g id="sugarP" data-fly="sugar" style="transform-box:fill-box;transform-origin:center"><path d="M220 40 L280 40 L290 110 L210 110 Z" fill="#EFEBE9" stroke="#D7CCC8" stroke-width="2"/><text x="250" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#8D6E63">砂糖</text></g>
+      <g id="chocP" data-fly="dark_choc" style="transform-box:fill-box;transform-origin:center">${chocoBar(400,50,54,54,'#3E2723')}</g>
+      <g id="gelP" data-fly="gelatin" style="transform-box:fill-box;transform-origin:center"><rect x="500" y="60" width="70" height="30" rx="4" fill="#E1F5FE" stroke="#B3E5FC" stroke-width="2"/><text x="535" y="80" text-anchor="middle" font-size="11" fill="#0277BD">吉利丁</text></g>
+      <path id="pourP" d="M400 300 Q560 280 725 240" stroke="#6D4C41" stroke-width="14" stroke-linecap="round" fill="none" opacity="0"/>
+    </svg>`;
+    reveal('#panP','in',100);
+    reveal('#moldP','in',300);
+    later(()=>{
+      addSceneTag(70, 75, '牛奶', 'l');
+      addSceneTag(160, 75, '奶油', 'l');
+      addSceneTag(250, 75, '砂糖', 'l');
+      addSceneTag(427, 77, '黑巧克力', 'r');
+      addSceneTag(535, 75, '吉利丁', 'r');
+    }, 1300);
+    showCO('Heat milk, cream and sugar to 60°C.','牛奶、奶油和糖加热到60°C。',1600,'🔥');
+    setStyle('#milkP',{transform:'translate(270px, 205px) rotate(-40deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},2200);
+    setStyle('#panP .pan-fill',{fill:'#FAFAFA',transition:'fill .8s'},2700);
+    setStyle('#milkP',{opacity:'0',transition:'opacity .4s ease .3s'},2900);
+    setStyle('#creamP',{transform:'translate(180px, 205px) rotate(-40deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},3100);
+    setStyle('#panP .pan-fill',{fill:'#FFF8E1',transition:'fill .8s'},3600);
+    setStyle('#creamP',{opacity:'0',transition:'opacity .4s ease .3s'},3800);
+    setStyle('#sugarP',{transform:'translate(90px, 205px) rotate(-30deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},4000);
+    setStyle('#panP .pan-fill',{fill:'#FFF3E0',transition:'fill .8s'},4500);
+    setStyle('#sugarP',{opacity:'0',transition:'opacity .4s ease .3s'},4700);
+    showCO('Add dark chocolate, stir until melted.','加入黑巧克力，搅拌融化。',5000,'🍫');
+    setStyle('#chocP',{transform:'translate(-87px, 203px) rotate(-20deg)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},5600);
+    setStyle('#chocP',{opacity:'0',transition:'opacity .5s ease .3s'},6400);
+    setStyle('#panP .pan-fill',{fill:'#5D4037',transition:'fill 1.2s'},6500);
+    setStyle('#panP .pan-top',{fill:'#5D4037',transition:'fill 1.2s'},6500);
+    setStyle('#gelP',{transform:'translate(-195px, 205px) rotate(15deg)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},6800);
+    setStyle('#gelP',{opacity:'0',transition:'opacity .5s ease .3s'},7600);
+    showCO('Strain and pour into the mold, chill 2 hours.','过滤后倒入模具，冷藏2小时。',8000,'🧊');
+    later(()=>{const s=document.getElementById('pourP');s.style.transition='opacity .3s';s.style.opacity='1';},8600);
+    setStyle('#pudL',{y:'280',height:'50',transition:'all 1.4s ease-out'},8800);
+    later(()=>{document.getElementById('pourP').style.opacity='0';},10300);
+  }
+});
+
+/* 21. 巧克力慕斯 */
+STEPS.push({
+  stage:'夹层', stageEn:'Fillings', name:'制作巧克力慕斯', nameEn:'Make Chocolate Mousse',
+  recipe:'蛋黄加糖打发，冲入热牛奶，加黑巧克力和吉利丁，冷却后拌入打发的淡奶油，倒入6寸模具定型。',
+  recipeEn:'Whisk yolks and sugar, whisk in hot milk, add chocolate and gelatin, cool, fold in whipped cream, and pour into a 6-inch mold.',
+  uses:{egg:2, sugar:30, milk:150, dark_choc:70, cream:150, gelatin:6, mold:0},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}
+      <g id="bowlM">${bowl(340, 330, 130, '#F5E0B7', 1)}<text x="340" y="408" text-anchor="middle" font-size="13" fill="#8D6E63">操作碗</text></g>
+      <g id="moldM"><rect x="650" y="230" width="170" height="130" rx="10" fill="#B0BEC5"/><rect x="660" y="240" width="150" height="110" rx="6" fill="#CFD8DC"/><ellipse cx="735" cy="230" rx="85" ry="12" fill="#90A4AE"/><ellipse cx="735" cy="230" rx="78" ry="9" fill="#ECEFF1"/><text x="735" y="380" text-anchor="middle" font-size="13" fill="#8D6E63">6寸模具</text></g>
+      <defs><clipPath id="moldClipM"><rect x="660" y="240" width="150" height="110" rx="6"/></clipPath></defs>
+      <g clip-path="url(#moldClipM)"><rect id="mousseL" x="660" y="330" width="150" height="0" fill="#8D6E63"/></g>
+      <g id="eggM" data-fly="egg" style="transform-box:fill-box;transform-origin:center"><ellipse cx="70" cy="75" rx="22" ry="28" fill="#FFE0B2" stroke="#E0B784" stroke-width="2"/><text x="70" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#8D6E63">蛋</text></g>
+      <g id="sugarM" data-fly="sugar" style="transform-box:fill-box;transform-origin:center"><path d="M120 45 L180 45 L190 105 L110 105 Z" fill="#EFEBE9" stroke="#D7CCC8" stroke-width="2"/><text x="150" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#8D6E63">砂糖</text></g>
+      <g id="milkM" data-fly="milk" style="transform-box:fill-box;transform-origin:center"><path d="M210 45 L270 45 L274 110 L206 110 Z" fill="#FFFFFF" stroke="#CFD8DC" stroke-width="2"/><text x="240" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#1565C0">牛奶</text></g>
+      <g id="chocM" data-fly="dark_choc" style="transform-box:fill-box;transform-origin:center">${chocoBar(400,50,54,54,'#3E2723')}</g>
+      <g id="gelM" data-fly="gelatin" style="transform-box:fill-box;transform-origin:center"><rect x="500" y="60" width="70" height="30" rx="4" fill="#E1F5FE" stroke="#B3E5FC" stroke-width="2"/><text x="535" y="80" text-anchor="middle" font-size="11" fill="#0277BD">吉利丁</text></g>
+      <g id="creamM" data-fly="cream" style="transform-box:fill-box;transform-origin:center"><path d="M600 45 L660 45 L664 110 L596 110 Z" fill="#FFFDE7" stroke="#E0E0E0" stroke-width="2"/><text x="630" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#8D6E63">淡奶油</text></g>
+      <path id="pourM" d="M400 300 Q560 280 735 240" stroke="#8D6E63" stroke-width="14" stroke-linecap="round" fill="none" opacity="0"/>
+      <g id="whiskM" style="opacity:0"><g class="whisk-circle">${whiskG(340, 325, 115, 0)}</g></g>
+    </svg>`;
+    reveal('#bowlM','in',100);
+    reveal('#moldM','in',300);
+    later(()=>{
+      addSceneTag(70, 75, '蛋黄', 'l');
+      addSceneTag(150, 75, '细砂糖', 'l');
+      addSceneTag(240, 75, '牛奶', 'l');
+      addSceneTag(427, 77, '黑巧克力', 'r');
+      addSceneTag(535, 75, '吉利丁', 'r');
+      addSceneTag(630, 75, '淡奶油', 'r');
+    }, 1400);
+    showCO('Whisk yolks and sugar until pale.','蛋黄加糖打发到颜色变浅。',1700,'🥄');
+    setStyle('#eggM',{transform:'translate(270px, 255px) rotate(-20deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},2300);
+    setStyle('#eggM',{opacity:'0',transition:'opacity .4s ease .3s'},3000);
+    setStyle('#sugarM',{transform:'translate(185px, 255px) rotate(-25deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},2500);
+    setStyle('#sugarM',{opacity:'0',transition:'opacity .4s ease .3s'},3200);
+    setStyle('#bowlM .bowl-fill',{fill:'#FFE082',transition:'fill 1s'},3100);
+    showCO('Whisk in hot milk.','冲入热牛奶，边冲边搅。',3500,'🥛');
+    setStyle('#milkM',{transform:'translate(98px, 252px) rotate(-40deg)',transition:'transform .85s cubic-bezier(.4,0,.2,1)'},4100);
+    setStyle('#bowlM .bowl-fill',{fill:'#FFCA28',transition:'fill 1s'},4600);
+    setStyle('#milkM',{opacity:'0',transition:'opacity .4s ease .3s'},4800);
+    showCO('Add dark chocolate and gelatin.','加入黑巧克力和吉利丁。',5100,'🍫');
+    setStyle('#chocM',{transform:'translate(-87px, 253px) rotate(-20deg)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},5700);
+    setStyle('#chocM',{opacity:'0',transition:'opacity .5s ease .3s'},6500);
+    setStyle('#bowlM .bowl-fill',{fill:'#6D4C41',transition:'fill 1.2s'},6600);
+    setStyle('#gelM',{transform:'translate(-195px, 255px) rotate(15deg)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},6900);
+    setStyle('#gelM',{opacity:'0',transition:'opacity .5s ease .3s'},7700);
+    showCO('Cool, then fold in whipped cream.','冷却后拌入打发的淡奶油。',8000,'🧊');
+    setStyle('#creamM',{transform:'translate(-290px, 252px) rotate(35deg)',transition:'transform .9s cubic-bezier(.4,0,.2,1)'},8600);
+    setStyle('#bowlM .bowl-fill',{fill:'#8D6E63',transition:'fill 1.4s'},9100);
+    setStyle('#creamM',{opacity:'0',transition:'opacity .4s ease .3s'},9400);
+    later(()=>{document.getElementById('whiskM').style.transition='opacity .4s';document.getElementById('whiskM').style.opacity='1';},9600);
+    later(()=>{const w=sceneEl.querySelector('#whiskM .whisk-circle');if(w)w.classList.remove('whisk-circle');},10600);
+    showCO('Pour mousse into the 6-inch mold and chill.','倒入6寸模具，冷藏定型。',10900,'🥣');
+    later(()=>{const s=document.getElementById('pourM');s.style.transition='opacity .3s';s.style.opacity='1';},11500);
+    setStyle('#mousseL',{y:'280',height:'50',transition:'all 1.4s ease-out'},11700);
+    later(()=>{document.getElementById('pourM').style.opacity='0';},13200);
+    showCO('Mousse ready.','慕斯完成。',13500,'✅');
+  }
+});
+
+/* 22. 黄油薄脆爆珠层 */
+STEPS.push({
+  stage:'夹层', stageEn:'Fillings', name:'制作黄油薄脆爆珠层', nameEn:'Make Butter Crunch Layer',
+  recipe:'融化黑巧克力和可可脂，拌入薄脆和爆珠，压入模具冷藏。',
+  recipeEn:'Melt dark chocolate and cocoa butter, mix in crunch and boba, press into the mold and chill.',
+  uses:{dark_choc:25, cocoab:5, crunch:40, boba:20},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}${bgCounter()}
+      <g id="panK">${saucepan(320, 330, 130, '#4E342E')}</g>
+      <g id="moldK"><rect x="650" y="230" width="170" height="130" rx="10" fill="#B0BEC5"/><rect x="660" y="240" width="150" height="110" rx="6" fill="#CFD8DC"/><ellipse cx="735" cy="230" rx="85" ry="12" fill="#90A4AE"/><ellipse cx="735" cy="230" rx="78" ry="9" fill="#ECEFF1"/><text x="735" y="380" text-anchor="middle" font-size="13" fill="#8D6E63">6寸模具</text></g>
+      <defs><clipPath id="moldClipD"><rect x="660" y="240" width="150" height="110" rx="6"/></clipPath></defs>
+      <g clip-path="url(#moldClipD)"><rect id="crunchL" x="660" y="330" width="150" height="0" fill="url(#crumbG)"/></g>
+      <g id="chocK" data-fly="dark_choc" style="transform-box:fill-box;transform-origin:center">${chocoBar(60,50,54,54,'#3E2723')}</g>
+      <g id="cocoabK" data-fly="cocoab" style="transform-box:fill-box;transform-origin:center"><circle cx="160" cy="80" r="24" fill="#FFF3E0" stroke="#D7A86E" stroke-width="2"/><text x="160" y="85" text-anchor="middle" font-size="11" font-weight="700" fill="#8D6E63">可可脂</text></g>
+      <g id="crunchK" data-fly="crunch" style="transform-box:fill-box;transform-origin:center"><rect x="760" y="50" width="80" height="56" rx="6" fill="#D7A86E" stroke="#C9A876" stroke-width="2"/><text x="800" y="84" text-anchor="middle" font-size="12" font-weight="700" fill="#3E2723">薄脆</text></g>
+      <g id="bobaK" data-fly="boba" style="transform-box:fill-box;transform-origin:center"><circle cx="800" cy="170" r="26" fill="#3E2723"/><text x="800" y="175" text-anchor="middle" font-size="12" font-weight="700" fill="#FFF8E1">爆珠</text></g>
+      <path id="pourK" d="M390 300 Q560 280 735 240" stroke="#3E2723" stroke-width="14" stroke-linecap="round" fill="none" opacity="0"/>
+      <g id="press" style="opacity:0"><rect x="670" y="180" width="130" height="22" rx="8" fill="#90A4AE"/><rect x="718" y="150" width="34" height="34" rx="6" fill="#78909C"/></g>
+    </svg>`;
+    reveal('#panK','in',100);
+    reveal('#moldK','in',300);
+    later(()=>{
+      addSceneTag(87, 78, '黑巧克力', 'l');
+      addSceneTag(160, 105, '可可脂', 'l');
+      addSceneTag(800, 75, '黄油薄脆', 'r');
+      addSceneTag(800, 200, '爆珠', 'r');
+    }, 1300);
+    showCO('Melt dark chocolate and cocoa butter.','融化黑巧克力和可可脂。',1600,'🍫');
+    setStyle('#chocK',{transform:'translate(233px, 213px) rotate(25deg)',transition:'transform .85s cubic-bezier(.22,1,.36,1)'},2200);
+    setStyle('#chocK',{opacity:'0',transition:'opacity .5s ease .3s'},2900);
+    setStyle('#panK .pan-fill',{fill:'#3E2723',transition:'fill 1.2s'},3000);
+    setStyle('#panK .pan-top',{fill:'#3E2723',transition:'fill 1.2s'},3000);
+    setStyle('#cocoabK',{transform:'translate(160px, 210px) rotate(-15deg)',transition:'transform .85s cubic-bezier(.22,1,.36,1)'},3200);
+    setStyle('#cocoabK',{opacity:'0',transition:'opacity .5s ease .3s'},3900);
+    showCO('Mix in the crunch quickly.','快速拌入黄油薄脆。',4200,'🍪');
+    setStyle('#crunchK',{transform:'translate(-480px, 212px) rotate(-25deg)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},4800);
+    setStyle('#crunchK',{opacity:'0',transition:'opacity .5s ease .4s'},5600);
+    showCO('Mix in the boba.','加入巧克力爆珠。',5900,'⚫');
+    setStyle('#bobaK',{transform:'translate(-480px, 120px) rotate(-10deg)',transition:'transform .9s cubic-bezier(.22,1,.36,1)'},6500);
+    setStyle('#bobaK',{opacity:'0',transition:'opacity .5s ease .4s'},7300);
+    showCO('Pour into the mold, press firm and chill 30 minutes.','倒入模具，压平压实，冷藏30分钟。',7600,'🥣');
+    later(()=>{const s=document.getElementById('pourK');s.style.transition='opacity .3s';s.style.opacity='1';},8200);
+    setStyle('#crunchL',{y:'270',height:'60',transition:'all 1.3s ease-out'},8400);
+    later(()=>{document.getElementById('pourK').style.opacity='0';},9800);
+    later(()=>{const p=document.getElementById('press');p.style.transition='opacity .5s, transform .6s';p.style.opacity='1';p.style.transform='translateY(-40px)';},10100);
+    later(()=>{document.getElementById('press').style.transform='translateY(50px)';},10800);
+    later(()=>{document.getElementById('press').style.opacity='0';},11500);
+  }
+});
+
+/* 23. 组装标题 */
+STEPS.push({
+  isTitle:true, stage:'组装', stageEn:'Assembly', name:'组装九重蛋糕', nameEn:'Assemble the Nonet Cake',
+  recipe:'把十四层叠起来，抹上奶油。', recipeEn:'Stack 14 layers and coat with cream.',
+  uses:{}, build(){ titleCard(5,'组装九重蛋糕','Assemble the Nonet Cake','把十四层叠起来，抹上奶油','Stack 14 layers and coat with cream'); }
+});
+
+/* 24. 逐层组装 */
+STEPS.push({
+  stage:'组装', stageEn:'Assembly', name:'逐层组装', nameEn:'Stack Layer by Layer',
+  recipe:'从底到顶：布朗尼、奶油、慕斯、奶油、戚风、奶油、奶冻、奶油、戚风、奶油、脆层、奶油、戚风、顶奶油。',
+  recipeEn:'Bottom to top: brownie, cream, mousse, cream, chiffon, cream, pudding, cream, chiffon, cream, crunch, cream, chiffon, top cream.',
+  uses:{},
+  build(){
+    const layers = [
+      {y:402,h:20,c:'#4E342E',zh:'布朗尼'},
+      {y:384,h:15,c:'#FFF3E0',zh:'白巧奶油'},
+      {y:366,h:22,c:'#6D4C41',zh:'慕斯'},
+      {y:347,h:15,c:'#FFF3E0',zh:'白巧奶油'},
+      {y:330,h:19,c:'#5D4037',zh:'戚风'},
+      {y:313,h:15,c:'#FFF3E0',zh:'白巧奶油'},
+      {y:296,h:19,c:'#795548',zh:'奶冻'},
+      {y:279,h:15,c:'#FFF3E0',zh:'白巧奶油'},
+      {y:262,h:19,c:'#5D4037',zh:'戚风'},
+      {y:245,h:15,c:'#FFF3E0',zh:'白巧奶油'},
+      {y:229,h:18,c:'#3E2723',zh:'脆层+爆珠'},
+      {y:212,h:15,c:'#FFF3E0',zh:'白巧奶油'},
+      {y:195,h:19,c:'#5D4037',zh:'戚风'},
+      {y:177,h:18,c:'#FFF3E0',zh:'顶奶油'}
+    ];
+    let rects = '', labels = '';
+    layers.forEach((l,i)=>{
+      rects += `<rect class="ly" data-i="${i}" x="324" y="${l.y}" width="252" height="${l.h}" fill="${l.c}" opacity="0" rx="1"/>`;
+      const isRight = i % 2 === 0;
+      const tx = isRight ? 592 : 308;
+      const anchor = isRight ? 'start' : 'end';
+      const lx1 = isRight ? 578 : 322;
+      const lx2 = isRight ? 588 : 312;
+      labels += `<g class="ly-tag" data-i="${i}" opacity="0"><line x1="${lx1}" y1="${l.y + l.h/2}" x2="${lx2}" y2="${l.y + l.h/2}" stroke="#C66900" stroke-width="1.6" stroke-dasharray="4 3"/><text x="${tx}" y="${l.y + l.h/2 + 4}" text-anchor="${anchor}" font-size="12" font-weight="700" fill="#3E2723">${l.zh}</text></g>`;
+    });
+    let dots='';for(let i=0;i<30;i++){const x=330+Math.random()*240;const y=241+Math.random()*16;dots+=`<circle cx="${x}" cy="${y}" r="2.2" fill="#D7A86E" opacity=".8"/>`;}
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}<defs><clipPath id="moldClipE"><rect x="324" y="150" width="252" height="272"/></clipPath></defs><rect x="0" y="0" width="900" height="500" fill="url(#wallG)"/><rect x="0" y="422" width="900" height="78" fill="#E8D5B7"/><rect x="0" y="422" width="900" height="6" fill="#D7A86E"/><g clip-path="url(#moldClipE)">${rects}<g id="dots" opacity="0">${dots}</g></g><rect x="320" y="146" width="260" height="280" rx="6" fill="none" stroke="#B0BEC5" stroke-width="8" opacity=".9"/><rect x="316" y="142" width="268" height="12" rx="5" fill="#CFD8DC"/>${labels}<g id="topD" opacity="0"><ellipse cx="450" cy="180" rx="126" ry="20" fill="#FFF3E0"/><circle cx="400" cy="172" r="7" fill="#3E2723"/><circle cx="440" cy="166" r="6" fill="#D7A86E"/><circle cx="480" cy="170" r="7" fill="#3E2723"/><circle cx="515" cy="176" r="5" fill="#D7A86E"/><circle cx="370" cy="178" r="5" fill="#8D6E63"/><circle cx="420" cy="184" r="5" fill="#3E2723"/><circle cx="465" cy="186" r="5" fill="#D7A86E"/></g><text id="doneTxt" x="450" y="488" text-anchor="middle" font-size="19" font-weight="700" fill="#5D4037" opacity="0">🎂 巧克力九重奏蛋糕完成！</text></svg>`;
+    showCO('Stack all the layers.','开始逐层组装。',200,'🎂');
+    layers.forEach((_,i)=>{
+      later(()=>{
+        const el = sceneEl.querySelector(`.ly[data-i="${i}"]`);
+        const tag = sceneEl.querySelector(`.ly-tag[data-i="${i}"]`);
+        if(el){ el.style.transition = 'opacity .45s ease-out'; el.setAttribute('opacity','1'); }
+        if(tag){ tag.style.transition = 'opacity .5s ease-out .1s'; tag.setAttribute('opacity','1'); }
+      }, 600 + i * 320);
+    });
+    later(()=>{const d=document.getElementById('dots');d.style.transition='opacity .5s';d.setAttribute('opacity','1');},600 + layers.length*320 + 400);
+    later(()=>{const t=document.getElementById('topD');t.style.transition='opacity .7s';t.setAttribute('opacity','1');},600 + layers.length*320 + 1000);
+    later(()=>{const t=document.getElementById('doneTxt');t.style.transition='opacity .8s';t.setAttribute('opacity','1');},600 + layers.length*320 + 1600);
+  }
+});
+
+/* 25. 冷藏定型与装饰 */
+STEPS.push({
+  stage:'组装', stageEn:'Assembly', name:'冷藏定型与装饰', nameEn:'Chill and Decorate',
+  recipe:'整体冷藏后，抹上白巧克力奶油，顶部装饰黄油薄脆。',
+  recipeEn:'Chill, coat with white chocolate cream, and top with butter crunch.',
+  uses:{},
+  build(){
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${DEFS}<defs><clipPath id="moldClipF"><rect x="324" y="150" width="252" height="272"/></clipPath></defs><rect x="0" y="0" width="900" height="500" fill="url(#wallG)"/><rect x="0" y="422" width="900" height="78" fill="#E8D5B7"/><rect x="0" y="422" width="900" height="6" fill="#D7A86E"/><g clip-path="url(#moldClipF)"><rect x="324" y="402" width="252" height="20" fill="#4E342E"/><rect x="324" y="384" width="252" height="15" fill="#FFF3E0"/><rect x="324" y="366" width="252" height="22" fill="#6D4C41"/><rect x="324" y="347" width="252" height="15" fill="#FFF3E0"/><rect x="324" y="330" width="252" height="19" fill="#5D4037"/><rect x="324" y="313" width="252" height="15" fill="#FFF3E0"/><rect x="324" y="296" width="252" height="19" fill="#795548"/><rect x="324" y="279" width="252" height="15" fill="#FFF3E0"/><rect x="324" y="262" width="252" height="19" fill="#5D4037"/><rect x="324" y="245" width="252" height="15" fill="#FFF3E0"/><rect x="324" y="229" width="252" height="18" fill="#3E2723"/><rect x="324" y="212" width="252" height="15" fill="#FFF3E0"/><rect x="324" y="195" width="252" height="19" fill="#5D4037"/><rect x="324" y="177" width="252" height="18" fill="#FFF3E0"/></g><rect x="320" y="146" width="260" height="280" rx="6" fill="none" stroke="#B0BEC5" stroke-width="8" opacity=".55"/><rect x="316" y="142" width="268" height="12" rx="5" fill="#CFD8DC" opacity=".55"/><g id="cakeCoat" opacity="0"><path d="M324 177 L576 177 L576 402 Q450 420 324 402 Z" fill="#FFFDF5" stroke="#E8D5B7" stroke-width="3"/><ellipse cx="450" cy="177" rx="126" ry="22" fill="#FFFFFF" stroke="#E8D5B7" stroke-width="3"/></g><g id="crunchTop" opacity="0"><rect x="410" y="165" width="18" height="10" rx="2" fill="#D7A86E" transform="rotate(18 419 170)"/><rect x="438" y="159" width="20" height="10" rx="2" fill="#D7A86E" transform="rotate(-15 448 164)"/><rect x="468" y="167" width="17" height="9" rx="2" fill="#C9A876" transform="rotate(25 476 171)"/><rect x="490" y="173" width="16" height="9" rx="2" fill="#D7A86E" transform="rotate(-8 498 177)"/><circle cx="426" cy="175" r="4" fill="#3E2723"/><circle cx="458" cy="179" r="3.5" fill="#3E2723"/><circle cx="484" cy="175" r="3.5" fill="#3E2723"/></g><text x="450" y="482" text-anchor="middle" font-size="20" font-weight="800" fill="#5D4037">🎂 Chocolate Nonet Cake · Done!</text></svg>`;
+    showCO('Chill at least 4 hours.','整体冷藏 4 小时以上。',200,'🧊');
+    showCO('Coat the whole cake with white cream.','把整个蛋糕抹上白巧克力奶油。',1600,'🧈');
+    later(()=>{const c=document.getElementById('cakeCoat');c.style.transition='opacity .8s';c.setAttribute('opacity','1');},2000);
+    showCO('Decorate the top with butter crunch.','顶部装饰黄油薄脆。',3200,'🍪');
+    later(()=>{const c=document.getElementById('crunchTop');c.style.transition='opacity .7s';c.setAttribute('opacity','1');},3600);
+    showCO('Thanks for watching!','从 0 到 1，完成啦！谢谢观看 🎉',4600,'🎉');
+  }
+});
+/* 26. 成品展示 · 上 */
+STEPS.push({
+  stage:'展示', stageEn:'Showcase', name:'成品展示 · 上', nameEn:'Cake Showcase · Part 1',
+  recipe:'回顾制作过程，每一步都值得被记录。',
+  recipeEn:'Look back at the process — every step is worth capturing.',
+  uses:{},
+  build(){
+    const photos = [
+      {src:'files/1.jpg', x:35,  y:58,  w:390, h:230, rot:-6, delay:300},
+      {src:'files/2.jpg', x:475, y:52,  w:390, h:230, rot:5,  delay:600},
+      {src:'files/3.jpg', x:45,  y:272, w:390, h:230, rot:4,  delay:900},
+      {src:'files/4.jpg', x:485, y:280, w:390, h:230, rot:-5, delay:1200}
+    ];
+
+    let svg = `${DEFS}`;
+    svg += `<rect x="0" y="0" width="900" height="500" fill="url(#wallG)"/>`;
+    svg += `<circle cx="450" cy="270" r="240" fill="#E8D5B7" opacity=".22"/>`;
+    svg += `<circle cx="450" cy="270" r="160" fill="#D7A86E" opacity=".14"/>`;
+
+    /* 先画照片 */
+    photos.forEach((ph, i) => {
+      const cx = ph.x + ph.w/2;
+      const cy = ph.y + ph.h/2;
+      const fx = ph.x - 8;
+      const fy = ph.y - 8;
+      const fw = ph.w + 16;
+      const fh = ph.h + 16;
+      const clipId = 'pClip1_' + i;
+
+      svg += `<g class="photo-group" data-photo="${i}">
+        <g transform="rotate(${ph.rot} ${cx} ${cy})">
+          <rect x="${fx+5}" y="${fy+7}" width="${fw}" height="${fh}" rx="14" fill="rgba(62,39,35,.32)"/>
+          <rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" rx="14" fill="#FFF8E1" stroke="#D7A86E" stroke-width="3"/>
+          <rect x="${ph.x}" y="${ph.y}" width="${ph.w}" height="${ph.h}" rx="8" fill="#F5E6D3"/>
+          <clipPath id="${clipId}">
+            <rect x="${ph.x}" y="${ph.y}" width="${ph.w}" height="${ph.h}" rx="8"/>
+          </clipPath>
+          <image href="${ph.src}" x="${ph.x}" y="${ph.y}" width="${ph.w}" height="${ph.h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})"/>
+          <rect x="${ph.x}" y="${ph.y}" width="${ph.w}" height="${ph.h}" rx="8" fill="none" stroke="#C66900" stroke-width="1.5"/>
+        </g>
+      </g>`;
+    });
+
+    /* 后画横幅，位于最顶层 */
+    svg += `<g class="title-pop" id="showBanner1">
+      <rect x="300" y="0" width="300" height="46" rx="23" fill="#5D4037" opacity=".96"/>
+      <text x="450" y="27" text-anchor="middle" font-size="17" font-weight="800" fill="#FFF8E1">成品展示 · Part 1</text>
+      <text x="450" y="42" text-anchor="middle" font-size="11" fill="#D7A86E" font-style="italic">Try it yourself · 你也可以</text>
+    </g>`;
+
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${svg}</svg>`;
+
+    later(() => {
+      const b = document.getElementById('showBanner1');
+      if(b) b.classList.add('in');
+    }, 150);
+
+    photos.forEach((ph, i) => {
+      later(() => {
+        const g = sceneEl.querySelector(`[data-photo="${i}"]`);
+        if(g) g.classList.add('in');
+      }, ph.delay);
+    });
+
+    showCO('Every photo tells a step.', '每张照片都是一个步骤。', 1800, '📷');
+    showCO('Try making it yourself!', '你也可以动手试一试！', 2800, '✨');
+  }
+});
+
+/* 27. 成品展示 · 下 */
+STEPS.push({
+  stage:'展示', stageEn:'Showcase', name:'成品展示 · 下', nameEn:'Cake Showcase · Part 2',
+  recipe:'亲手做一次，就是最好的礼物。',
+  recipeEn:'Making it yourself is the best gift.',
+  uses:{},
+  build(){
+    const photos = [
+      {src:'files/5.jpg', x:40,  y:58,  w:390, h:230, rot:7,  delay:300},
+      {src:'files/6.jpg', x:480, y:52,  w:390, h:230, rot:-6, delay:600},
+      {src:'files/7.jpg', x:50,  y:272, w:390, h:230, rot:-5, delay:900},
+      {src:'files/8.jpg', x:490, y:280, w:390, h:230, rot:4,  delay:1200}
+    ];
+
+    let svg = `${DEFS}`;
+    svg += `<rect x="0" y="0" width="900" height="500" fill="url(#wallG)"/>`;
+    svg += `<circle cx="450" cy="270" r="240" fill="#E8D5B7" opacity=".22"/>`;
+    svg += `<circle cx="450" cy="270" r="160" fill="#D7A86E" opacity=".14"/>`;
+
+    photos.forEach((ph, i) => {
+      const cx = ph.x + ph.w/2;
+      const cy = ph.y + ph.h/2;
+      const fx = ph.x - 8;
+      const fy = ph.y - 8;
+      const fw = ph.w + 16;
+      const fh = ph.h + 16;
+      const clipId = 'pClip2_' + i;
+
+      svg += `<g class="photo-group" data-photo="${i}">
+        <g transform="rotate(${ph.rot} ${cx} ${cy})">
+          <rect x="${fx+5}" y="${fy+7}" width="${fw}" height="${fh}" rx="14" fill="rgba(62,39,35,.32)"/>
+          <rect x="${fx}" y="${fy}" width="${fw}" height="${fh}" rx="14" fill="#FFF8E1" stroke="#D7A86E" stroke-width="3"/>
+          <rect x="${ph.x}" y="${ph.y}" width="${ph.w}" height="${ph.h}" rx="8" fill="#F5E6D3"/>
+          <clipPath id="${clipId}">
+            <rect x="${ph.x}" y="${ph.y}" width="${ph.w}" height="${ph.h}" rx="8"/>
+          </clipPath>
+          <image href="${ph.src}" x="${ph.x}" y="${ph.y}" width="${ph.w}" height="${ph.h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})"/>
+          <rect x="${ph.x}" y="${ph.y}" width="${ph.w}" height="${ph.h}" rx="8" fill="none" stroke="#C66900" stroke-width="1.5"/>
+        </g>
+      </g>`;
+    });
+
+    svg += `<g class="title-pop" id="showBanner2">
+      <rect x="300" y="0" width="300" height="46" rx="23" fill="#5D4037" opacity=".96"/>
+      <text x="450" y="27" text-anchor="middle" font-size="17" font-weight="800" fill="#FFF8E1">成品展示 · Part 2</text>
+      <text x="450" y="42" text-anchor="middle" font-size="11" fill="#D7A86E" font-style="italic">Make it yours · 属于你的</text>
+    </g>`;
+
+    sceneEl.innerHTML = `<svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid meet">${svg}</svg>`;
+
+    later(() => {
+      const b = document.getElementById('showBanner2');
+      if(b) b.classList.add('in');
+    }, 150);
+
+    photos.forEach((ph, i) => {
+      later(() => {
+        const g = sceneEl.querySelector(`[data-photo="${i}"]`);
+        if(g) g.classList.add('in');
+      }, ph.delay);
+    });
+
+    showCO('You can do it too!', '你也完全可以做到！', 1800, '💪');
+    showCO('Enjoy your own Nonet Cake.', '享受属于你的九重奏蛋糕。', 2800, '🎉');
+  }
+});
+/* ==================== 导航 ==================== */
+let current = 1;
+const TOTAL = STEPS.length;
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function renderTrack(){
+  const t=document.getElementById('strack');let h='';
+  for(let i=1;i<=TOTAL;i++){ let c='tdot'; if(i<current)c+=' done'; else if(i===current)c+=' cur'; h+=`<div class="${c}"></div>`; }
+  t.innerHTML=h;
+}
+function renderHeader(){
+  const s=STEPS[current-1];
+  document.querySelector('#sname .num').textContent=`STEP ${current} / ${TOTAL}`;
+  document.querySelector('#sname .en').textContent=s.nameEn;
+  document.querySelector('#sname .zh').textContent=s.name;
+  document.querySelector('#sname .stage').textContent=s.stage+' · '+s.stageEn;
+  document.getElementById('rstep').innerHTML=`<div class="r-en">${s.recipeEn||''}</div><div class="r-zh">${s.recipe||''}</div>`;
+}
+
+function goTo(n){
+  if(n<1||n>TOTAL)return;
+  clearT();
+  coAreaEl.innerHTML='';
+  current=n;
+  if(n>=3) ingReady=true;
+
+  const step=STEPS[current-1];
+  useIng(step.uses);
+  renderRecipe(Object.keys(step.uses||{}));
+  renderUseList(step.uses);
+  renderTrack();
+  renderHeader();
+  document.body.classList.toggle('title-mode', !!step.isTitle);
+
+  step.build();
+
+  sceneEl.querySelectorAll('[data-fly]').forEach(el => {
+    el.style.transition = 'none';
+    el.style.opacity = '0';
+  });
+
+  rawLater(runFlyIns, 100);
+
+  prevBtn.disabled = current===1;
+  nextBtn.disabled = current===TOTAL;
+  nextBtn.textContent = current===TOTAL ? '已完成 ✓' : '下一步 →';
+}
+
+prevBtn.addEventListener('click',()=>goTo(current-1));
+nextBtn.addEventListener('click',()=>goTo(current+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')goTo(current+1);
+  if(e.key==='ArrowLeft')goTo(current-1);
+});
+
+renderRecipe();
+renderUseList({});
+goTo(1);
+</script>
+</body>
+</html>
